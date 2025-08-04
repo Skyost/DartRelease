@@ -19,7 +19,7 @@ class UpdatePubspecProcess with ReleaseProcess {
       return const ReleaseProcessResultCancelled();
     }
     YamlEditor editor = YamlEditor(pubspecContent.content);
-    editor.update(['version'], newVersion.toString());
+    editor.update(['version'], newVersion.version.toString());
     stdout.writeln('Writing version to "pubspec.yaml" and running `flutter pub get`...');
 
     File pubspecFile = File('./pubspec.yaml');
