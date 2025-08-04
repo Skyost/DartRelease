@@ -108,7 +108,7 @@ class ReleaseConfig {
     }
     return ReleaseConfig(
       githubRepository: githubRepository,
-      defaultIgnoredScopes: releaseConfig['defaultIgnoredScopes'] ?? ['docs', 'version', 'deps'],
+      defaultIgnoredScopes: changelog['defaultIgnoredScopes'] ?? ['docs', 'version', 'deps'],
       changelogHeader: changelog['header'] ?? '# 📰 Changelog',
       markdownEntryTitleTemplate: changelogEntry['title'] ?? '## v{{ version }}',
       markdownEntryHeaderTemplate: changelogEntry['header'] ?? 'Released on {{ date | date: "MMMM d, yyyy" }}.',
