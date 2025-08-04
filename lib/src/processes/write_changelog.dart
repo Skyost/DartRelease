@@ -90,6 +90,7 @@ ${fileContent.substring(changeLogHeader.length + 2)}''';
             'hash': entry.hash,
           },
         ).render();
+        result += '\n';
       }
     }
     return result;
