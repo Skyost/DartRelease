@@ -1,5 +1,10 @@
 # 📰 `release` utility changelog
 
+## v0.1.3
+Released on August 4, 2025.
+
+* **CHORE**: dependencies constraints to match the latest Flutter version. ([#5d58d45](https://github.com/Skyost/DartRelease/commit/5d58d45))
+
 ## v0.1.2
 Released on August 4, 2025.
 
