@@ -56,7 +56,7 @@ class ReleaseConfig {
   /// - `hash`: The hash of the changelog entry.
   ///
   /// Read from the `item` field in the `entry` section of the `changelog` section of the pubspec.yaml file.
-  /// Defaults to `* **{% if breaking %}BREAKING {% endif %}{{ type | upcase }}**: {{ description }} ({% if repo %}[#{{ hash }}]({{ repo }}/commit/{{ hash }}){% else %}#{{ hash }}{% endif %})`.
+  /// Defaults to `* **{% if breaking %}BREAKING {% endif %}{{ type | upcase }}**: {{ description }} ({% if repo %}[#{{ hash }}](https://github.com/{{ repo }}/commit/{{ hash }}){% else %}#{{ hash }}{% endif %})`.
   final String markdownEntryListItemTemplate;
 
   /// The commit message for the new version.
@@ -114,7 +114,7 @@ class ReleaseConfig {
       markdownEntryHeaderTemplate: changelogEntry['header'] ?? 'Released on {{ date | date: "MMMM d, yyyy" }}.',
       markdownEntryListItemTemplate:
           changelogEntry['item'] ??
-          '* **{% if breaking %}BREAKING {% endif %}{{ type | upcase }}**: {{ description }} ({% if repo %}[#{{ hash }}]({{ repo }}/commit/{{ hash }}){% else %}#{{ hash }}{% endif %})',
+          '* **{% if breaking %}BREAKING {% endif %}{{ type | upcase }}**: {{ description }} ({% if repo %}[#{{ hash }}](https://github.com/{{ repo }}/commit/{{ hash }}){% else %}#{{ hash }}{% endif %})',
       newVersionCommitMessage: git['newVersionCommitMessage'] ?? 'chore(version): Updated version and changelog.',
       remoteBranch: git['remote'] ?? 'main',
     );

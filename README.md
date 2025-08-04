@@ -73,7 +73,7 @@ release:
     entry:
       title: '## v{{ version }}' # This is the default.
       header: 'Released on {{ date | date: "MMMM d, yyyy" }}.' # This is the default.
-      item: '* **{% if breaking %}BREAKING {% endif %}{{ type | upcase }}**: {{ description }} ({% if repo %}[#{{ hash }}]({{ repo }}/commit/{{ hash }}){% else %}#{{ hash }}{% endif %})' # This is the default.
+      item: '* **{% if breaking %}BREAKING {% endif %}{{ type | upcase }}**: {{ description }} ({% if repo %}[#{{ hash }}](https://github.com/{{ repo }}/commit/{{ hash }}){% else %}#{{ hash }}{% endif %})' # This is the default.
     git:
       github: https://github.com/me/my_app # Alternative to top-level `repository`.
       newVersionCommitMessage: 'chore(version): Updated version and changelog.' # This is the default.
