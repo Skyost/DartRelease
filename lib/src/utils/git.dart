@@ -52,9 +52,20 @@ class Git {
     required List<String> files,
     String? message,
   }) async {
+    List<String> filesToCommit = List.of(files);
+    for (String file in files) {
+      ProcessResult result = await cmd.run(
+        executable: 'git',
+        arguments: ['check-ignore', file],
+      );
+      if (result.exitCode == 0) {
+        filesToCommit.remove(file);
+      }
+    }
+
     ProcessResult result = await cmd.run(
       executable: 'git',
-      arguments: ['add', ...files],
+      arguments: ['add', ...filesToCommit],
     );
     if (result.exitCode != 0) {
       return false;
