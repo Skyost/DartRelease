@@ -1,7 +1,6 @@
 # 📦 `release` utility
 
 [![Pub Likes](https://img.shields.io/pub/likes/release?style=flat-square)](https://pub.dev/packages/release/score)
-[![Pub Popularity](https://img.shields.io/pub/popularity/release?style=flat-square)](https://pub.dev/packages/release/score)
 [![Pub Points](https://img.shields.io/pub/points/release?style=flat-square)](https://pub.dev/packages/release/score)
 [![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](#license)
 

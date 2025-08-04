@@ -7,6 +7,13 @@ issue_tracker: https://github.com/Skyost/DartRelease/issues
 funding:
   - https://ko-fi.com/Skyost
   - https://paypal.me/Skyost
+topics:
+  - tool
+  - cli
+  - release
+  - changelog
+executables:
+  - release:
 
 environment:
   sdk: '>=3.8.0 <4.0.0'
