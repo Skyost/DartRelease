@@ -10,17 +10,21 @@ releasing your Darts apps.
 
 It takes care of :
 
-* Reading the pubspec.yaml file to find the current version.
+* Reading the _pubspec.yaml_ file to find the current version.
 * Finding the changes since the last `release` run.
 * Bumping the version and the version code, marking breaking changes.
-* Writing the changes in the CHANGELOG.md file.
-* Updating both pubspec.yaml and snap/snapcraft.yaml files.
+* Writing the changes in the _CHANGELOG.md_ file.
+* Updating both _pubspec.yaml_ and _snap/snapcraft.yaml_ files.
 * Committing and pushing the changes.
 * Creating a Github release, or just a tag if the previous step has failed.
 * Publishing the [pub.dev](https://pub.dev) package, if no `publish_to: none` is specified in the
-  pubspec.yaml file.
+  _pubspec.yaml_ file.
 
 Also : almost everything is configurable.
+
+> [!WARNING]  
+> Currently, `release` has only been tested on Windows. Feel free to test it on other platforms
+> and to give your feedback !
 
 ## Getting started
 
@@ -47,13 +51,13 @@ dart run release
 ```
 
 The utility will guide you through the release process. Note that, in order to generate your
-CHANGELOG.md file,
+_CHANGELOG.md_ file,
 `release` needs your commits to be formatted according
 to [conventional commits](https://conventionalcommits.org).
 
 ### Configuration
 
-You can configure the `release` utility directly in your `pubspec.yaml` file.
+You can configure the `release` utility directly in your _pubspec.yaml_ file.
 Here's an example :
 
 ```yaml
@@ -80,10 +84,44 @@ release:
       remote: 'main' # This is the default.
 ```
 
+### Setup Github releases
+
+You have to go
+to [https://github.com/settings/personal-access-tokens/new](https://github.com/settings/personal-access-tokens/new)
+in order to create a new fine-grained token.
+
+* **Token name** : put your token name here.
+* **Description** : put anything you want here.
+* **Expiration date** : enter any expiration date you want.
+
+In the **Repository access** section, tick **Only select repositories** and then choose your app
+repository.
+
+Then, in the **Permissions** section, click on **Add permissions**, select **Contents** and then,
+adjust the accesses like this :
+
+* **Contents** : must be set to _Read and write_.
+* **Metadata** : must be set to _Read only_.
+
+Here's a screenshot of my setup for the `release` utility :
+
+<img src="https://github.com/user-attachments/assets/2e2d49cb-f8f7-400f-8b1d-928c8fc78adc" height="500" alt="Screenshot">
+
+Once done, click on **Generate token**. Then, all you have to do it to create a _.env_ file,
+at the root of your project folder containing your Github token :
+
+```env
+GITHUB_PAT=github_pat_...
+```
+
+> [!CAUTION]
+> This token should not be shared with anyone. In particular, the _.env_ file should not be
+> version controlled (ie. put it in _.gitignore_).
+
 ### Example
 
-This utility is used in some of my apps and projects. Feel free to check their CHANGELOG.md,
-their pubspec.yaml, their releases page, etc.
+This utility is used in some of my apps and projects. Feel free to check their _CHANGELOG.md_,
+their _pubspec.yaml_, their releases page, etc.
 
 * [Open Authenticator](https://github.com/Skyost/OpenAuthenticator)
 * [Scriny](https://github.com/Skyost/Scriny)
