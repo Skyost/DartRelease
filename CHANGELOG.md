@@ -1,5 +1,10 @@
 # 📰 `release` utility changelog
 
+## v0.1.2
+Released on August 4, 2025.
+
+* **CHORE**: Updated the README.md and the pubspec.yaml. ([#d970a83](https://github.com/Skyost/DartRelease/commit/d970a83))
+
 ## v0.1.1
 Released on August 4, 2025.
 
