@@ -53,6 +53,44 @@ The utility will guide you through the release process. Note that in order to ge
 _CHANGELOG.md_ file, `release` requires your commits to follow the
 [Conventional Commits](https://conventionalcommits.org) format.
 
+Here is an example output :
+
+<details>
+
+<summary>Example</summary>
+
+```
+D:\Projects\Flutter\Project>dart run release
+Building package executable...
+Built release:release.
+Successfully read pubspec.yaml.
+Current version is "0.1.0".
+Last tag is "0.1.0".
+Found no breaking change.
+Proposed new version is "0.1.1", enter "Y" to continue or type a new version proposal. Type "N" to cancel. Y
+Enter a comma separated list of scopes to ignore (default is "docs,version,deps") or "Y" to continue. Y
+Writing changelog content...
+Done.
+Writing version to "pubspec.yaml" and running `flutter pub get`...
+Done.
+Do you want to commit the changes ? (Y/N) Y
+Committing changes...
+Done.
+Do you want to push the changes ? (Y/N) Y
+Pushing...
+Done.
+Do you want to create a Github release ? (Y/N) Y
+Creating a release on Github...
+Done.
+Fetching tags...
+Done.
+Do you want to publish the new version on pub.dev ? (Y/N) Y
+Publishing...
+Done.
+```
+
+</details>
+
 ### Configuration
 
 You can configure the `release` utility directly in your _pubspec.yaml_ file.
