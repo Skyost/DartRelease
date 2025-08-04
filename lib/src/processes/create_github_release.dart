@@ -46,7 +46,7 @@ class CreateGithubReleaseProcess with ReleaseProcess {
       Uri(
         scheme: 'https',
         host: 'api.github.com',
-        path: 'repos${Uri.parse(repository).path}/releases',
+        path: 'repos/$repository/releases',
       ),
       headers: {
         HttpHeaders.acceptHeader: 'application/vnd.github+json',
