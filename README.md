@@ -108,7 +108,8 @@ repository: https://github.com/me/my_app
 release:
   changelog:
     header: '# 📰 my_app changelog'
-    defaultIgnoredScopes: [ 'docs', 'version', 'deps' ] # This is the default.
+    defaultIgnoredScopes: ['docs', 'version', 'deps'] # This is the default.
+    defaultIgnoredTypes: ['test'] # This is the default.
     # Entries are processed using the Liquid template engine.
     entry:
       title: '## v{{ version }}' # This is the default.
