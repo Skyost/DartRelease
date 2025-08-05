@@ -1,4 +1,4 @@
-export 'ask_ignored_scopes.dart';
+export 'ask_ignored_scopes_types.dart';
 export 'commit_push.dart';
 export 'create_github_release.dart';
 export 'create_tag.dart';

@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:liquify/liquify.dart';
-import 'package:release/src/processes/ask_ignored_scopes.dart';
+import 'package:release/src/processes/ask_ignored_scopes_types.dart';
 import 'package:release/src/processes/find_changes.dart';
 import 'package:release/src/processes/new_version.dart';
 import 'package:release/src/processes/process.dart';
@@ -18,7 +18,7 @@ class WriteChangelogProcess with ReleaseProcess {
   ReleaseProcessResult run(Cmd cmd, List<Object> previousValues) {
     ChangeLogEntry? changeLogEntry = findValue<ChangeLogEntry>(previousValues);
     PubspecContent? pubspecContent = findValue<PubspecContent>(previousValues);
-    IgnoredScopes? ignoredScopes = findValue<IgnoredScopes>(previousValues);
+    IgnoredScopesAndTypes? ignoredScopes = findValue<IgnoredScopesAndTypes>(previousValues);
     NewVersion? newVersion = findValue<NewVersion>(previousValues);
     if (changeLogEntry == null || pubspecContent == null || ignoredScopes == null || newVersion == null) {
       return const ReleaseProcessResultCancelled();
@@ -71,11 +71,14 @@ ${fileContent.substring(changeLogHeader.length + 2)}''';
   String _generateMarkdownContent({
     required ChangeLogEntry changeLogEntry,
     required PubspecContent pubspecContent,
-    required IgnoredScopes ignoredScopes,
+    required IgnoredScopesAndTypes ignoredScopes,
     required Map<String, dynamic> data,
   }) {
     String result = '';
     for (String type in changeLogEntry.subEntries.keys) {
+      if (ignoredScopes.types.contains(type)) {
+        continue;
+      }
       for (ConventionalCommitWithHash entry in changeLogEntry.subEntries[type]!) {
         if (entry.scopes.firstWhere(ignoredScopes.scopes.contains, orElse: () => '').isNotEmpty) {
           continue;

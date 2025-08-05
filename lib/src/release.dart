@@ -8,7 +8,7 @@ class Release {
     ReadPubspecProcess(),
     FindChangesProcess(),
     NewVersionProcess(),
-    AskIgnoredScopesProcess(),
+    AskIgnoredScopesAndTypesProcess(),
     WriteChangelogProcess(),
     UpdatePubspecProcess(),
     UpdateSnapcraftProcess(),
