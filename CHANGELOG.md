@@ -1,5 +1,11 @@
 # 📰 `release` utility changelog
 
+## v0.1.5
+Released on August 5, 2025.
+
+* **FEAT**: Added the possibility to ignore some types. ([#546e557](https://github.com/Skyost/DartRelease/commit/546e557))
+* **FIX**: Fixed a bug with ignored scopes. ([#df35af8](https://github.com/Skyost/DartRelease/commit/df35af8))
+
 ## v0.1.4
 Released on August 4, 2025.
 
