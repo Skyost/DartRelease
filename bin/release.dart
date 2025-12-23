@@ -15,7 +15,7 @@ Future<void> main(List<String> args) async {
   parser.addOption(
     'processes',
     abbr: 'p',
-    help: 'Comma separated list of processes to run. If not specified, all processes will be run.'
+    help: 'Comma separated list of processes to run. If not specified, all processes will be run.',
   );
   parser.addFlag(
     'verbose',
@@ -38,7 +38,7 @@ Future<void> main(List<String> args) async {
   if (wantedProcesses != null && wantedProcesses.isNotEmpty) {
     processes = wantedProcesses;
   }
-  
+
   Release release = Release(
     verbose: results.flag('verbose'),
     processes: processes,
