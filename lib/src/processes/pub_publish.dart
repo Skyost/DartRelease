@@ -6,14 +6,16 @@ import 'package:release/src/processes/read_pubspec.dart';
 import 'package:release/src/utils/cmd.dart';
 
 /// A process that asks the user to publish to pub.dev.
-class PubPublishProcess with ReleaseProcess {
+class PubPublishProcess with ReleaseProcess, PubspecDependantReleaseProcess {
   /// Creates a new [PubPublishProcess] instance.
   const PubPublishProcess();
 
   @override
-  Future<ReleaseProcessResult> run(Cmd cmd, List<Object> previousValues) async {
-    PubspecContent? pubspecContent = findValue<PubspecContent>(previousValues);
-    if (pubspecContent == null || pubspecContent.publishTo == 'none') {
+  String get id => 'pub-publish';
+
+  @override
+  Future<ReleaseProcessResult> runWithPubspec(Cmd cmd, List<Object> previousValues, PubspecContent pubspecContent) async {
+    if (pubspecContent.publishTo == 'none') {
       return const ReleaseProcessResultCancelled();
     }
 

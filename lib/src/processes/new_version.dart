@@ -7,15 +7,17 @@ import 'package:release/src/processes/read_pubspec.dart';
 import 'package:release/src/utils/cmd.dart';
 
 /// A process that asks the user for a new version.
-class NewVersionProcess with ReleaseProcess {
+class NewVersionProcess with ReleaseProcess, PubspecDependantReleaseProcess {
   /// Creates a new [NewVersionProcess] instance.
   const NewVersionProcess();
 
   @override
-  ReleaseProcessResult run(Cmd cmd, List<Object> previousValues) {
+  String get id => 'new-version';
+
+  @override
+  ReleaseProcessResult runWithPubspec(Cmd cmd, List<Object> previousValues, PubspecContent pubspecContent) {
     ChangeLogEntry? changeLogEntry = findValue<ChangeLogEntry>(previousValues);
-    PubspecContent? pubspecContent = findValue<PubspecContent>(previousValues);
-    if (changeLogEntry == null || pubspecContent == null) {
+    if (changeLogEntry == null) {
       return const ReleaseProcessResultCancelled();
     }
     Version newVersion = changeLogEntry.bumpVersion(pubspecContent.version);

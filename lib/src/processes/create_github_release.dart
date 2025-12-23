@@ -13,15 +13,17 @@ import 'package:release/src/utils/git.dart';
 import 'package:release/src/utils/version.dart';
 
 /// A process that asks the user to create a Github release.
-class CreateGithubReleaseProcess with ReleaseProcess {
+class CreateGithubReleaseProcess with ReleaseProcess, PubspecDependantReleaseProcess {
   /// Creates a new [CreateGithubReleaseProcess] instance.
   const CreateGithubReleaseProcess();
 
   @override
-  Future<ReleaseProcessResult> run(Cmd cmd, List<Object> previousValues) async {
-    PubspecContent? pubspecContent = findValue<PubspecContent>(previousValues);
+  String get id => 'create-github-release';
+
+  @override
+  Future<ReleaseProcessResult> runWithPubspec(Cmd cmd, List<Object> previousValues, PubspecContent pubspecContent) async {
     NewVersion? newVersion = findValue<NewVersion>(previousValues);
-    if (pubspecContent == null || newVersion == null) {
+    if (newVersion == null) {
       return const ReleaseProcessResultCancelled();
     }
 
@@ -30,7 +32,7 @@ class CreateGithubReleaseProcess with ReleaseProcess {
       return const ReleaseProcessResultCancelled();
     }
 
-    String? repository = pubspecContent.config.githubRepository;
+    String? repository = readGithubRepository(pubspecContent);
     if (repository == null) {
       return ReleaseProcessResultError(error: 'Cannot find the Github repository in the pubspec.');
     }

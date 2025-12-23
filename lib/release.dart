@@ -7,7 +7,6 @@
 /// - Create a Github release.
 library;
 
-export 'src/config.dart';
 export 'src/processes/processes.dart';
 export 'src/release.dart';
 export 'src/utils/cmd.dart';

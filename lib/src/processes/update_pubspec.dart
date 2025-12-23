@@ -7,18 +7,20 @@ import 'package:release/src/utils/cmd.dart';
 import 'package:yaml_edit/yaml_edit.dart';
 
 /// A process that updates the pubspec.yaml file.
-class UpdatePubspecProcess with ReleaseProcess {
+class UpdatePubspecProcess with ReleaseProcess, PubspecDependantReleaseProcess {
   /// Creates a new [UpdatePubspecProcess] instance.
   const UpdatePubspecProcess();
 
   @override
-  ReleaseProcessResult run(Cmd cmd, List<Object> previousValues) {
-    PubspecContent? pubspecContent = findValue<PubspecContent>(previousValues);
+  String get id => 'update-pubspec';
+
+  @override
+  ReleaseProcessResult runWithPubspec(Cmd cmd, List<Object> previousValues, PubspecContent pubspecContent) {
     NewVersion? newVersion = findValue<NewVersion>(previousValues);
-    if (pubspecContent == null || newVersion == null) {
+    if (newVersion == null) {
       return const ReleaseProcessResultCancelled();
     }
-    YamlEditor editor = YamlEditor(pubspecContent.content);
+    YamlEditor editor = YamlEditor(pubspecContent.rawContent);
     editor.update(['version'], newVersion.version.toString());
     stdout.writeln('Writing version to "pubspec.yaml" and running `flutter pub get`...');
 

@@ -3,15 +3,45 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:release/src/release.dart';
 import 'package:release/src/utils/cmd.dart';
+import 'package:release/src/processes/processes.dart';
 
 /// A process that can be run by the [Release] utility.
 mixin ReleaseProcess {
+  /// The default processes to run.
+  static const List<ReleaseProcess> allProcesses = [
+    ReadPubspecProcess(),
+    FindChangesProcess(),
+    NewVersionProcess(),
+    AskIgnoredScopesAndTypesProcess(),
+    WriteChangelogProcess(),
+    UpdatePubspecProcess(),
+    UpdateFlatpakProcess(),
+    UpdateSnapcraftProcess(),
+    CommitAndPushProcess(),
+    CreateGithubReleaseProcess(),
+    CreateTagProcess(),
+    PubPublishProcess(),
+  ];
+
+  /// The process id.
+  String get id;
+
   /// Runs the process.
   FutureOr<ReleaseProcessResult> run(Cmd cmd, List<Object> previousValues);
 
   /// Finds the first success value in the list.
   @protected
   T? findValue<T>(List<Object> previousValues) => previousValues.whereType<T>().firstOrNull;
+  
+  /// Finds a [ReleaseProcess] by its id.
+  static ReleaseProcess? fromId(String id) {
+    for (ReleaseProcess process in allProcesses) {
+      if (process.id == id) {
+        return process;
+      }
+    }
+    return null;
+  }
 }
 
 /// The result of a [ReleaseProcess].

@@ -13,6 +13,9 @@ class FindChangesProcess with ReleaseProcess {
   const FindChangesProcess();
 
   @override
+  String get id => 'find-changes';
+
+  @override
   Future<ReleaseProcessResult> run(Cmd cmd, List<Object> previousValues) async {
     Git git = Git(cmd: cmd);
     String? lastTag = await git.findLastTag();

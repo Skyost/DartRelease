@@ -13,6 +13,9 @@ class CreateTagProcess with ReleaseProcess {
   const CreateTagProcess();
 
   @override
+  String get id => 'create-tag';
+
+  @override
   Future<ReleaseProcessResult> run(Cmd cmd, List<Object> previousValues) async {
     NewVersion? newVersion = findValue<NewVersion>(previousValues);
     CommitPushResult? commitPushResult = findValue<CommitPushResult>(previousValues);

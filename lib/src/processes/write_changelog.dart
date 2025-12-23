@@ -10,40 +10,48 @@ import 'package:release/src/utils/cmd.dart';
 import 'package:release/src/utils/version.dart';
 
 /// A process that writes the `CHANGELOG.md` file.
-class WriteChangelogProcess with ReleaseProcess {
+class WriteChangelogProcess with ReleaseProcess, PubspecDependantReleaseProcess {
   /// Creates a new [WriteChangelogProcess] instance.
   const WriteChangelogProcess();
 
   @override
-  ReleaseProcessResult run(Cmd cmd, List<Object> previousValues) {
+  String get id => 'write-changelog';
+
+  @override
+  ReleaseProcessResult runWithPubspec(Cmd cmd, List<Object> previousValues, PubspecContent pubspecContent) {
     ChangeLogEntry? changeLogEntry = findValue<ChangeLogEntry>(previousValues);
-    PubspecContent? pubspecContent = findValue<PubspecContent>(previousValues);
     IgnoredScopesAndTypes? ignoredScopes = findValue<IgnoredScopesAndTypes>(previousValues);
     NewVersion? newVersion = findValue<NewVersion>(previousValues);
-    if (changeLogEntry == null || pubspecContent == null || ignoredScopes == null || newVersion == null) {
+    if (changeLogEntry == null || ignoredScopes == null || newVersion == null) {
       return const ReleaseProcessResultCancelled();
     }
 
+    String? repository = readGithubRepository(pubspecContent);
+    if (repository == null) {
+      return ReleaseProcessResultError(error: 'Cannot find the Github repository in the pubspec.');
+    }
+    _WriteChangelogProcessConfig config = _readConfig(pubspecContent);
+    String? githubRepository = readGithubRepository(pubspecContent);
     Map<String, dynamic> data = {
       'version': newVersion.version.buildName(includeBuild: false),
       'build': newVersion.version.build,
       'date': DateTime.now(),
-      'repo': pubspecContent.config.githubRepository,
+      if (githubRepository != null) 'repo': githubRepository,
     };
 
-    String markdownEntryTitle = Template.parse(pubspecContent.config.markdownEntryTitleTemplate, data: data).render();
+    String markdownEntryTitle = Template.parse(config.markdownEntryTitleTemplate, data: data).render();
     String markdownEntryHeader =
         '''$markdownEntryTitle
-${Template.parse(pubspecContent.config.markdownEntryHeaderTemplate, data: data).render()}
+${Template.parse(config.markdownEntryHeaderTemplate, data: data).render()}
 ''';
     String markdownEntryContent = _generateMarkdownContent(
       changeLogEntry: changeLogEntry,
-      pubspecContent: pubspecContent,
+      config: config,
       ignoredScopes: ignoredScopes,
       data: data,
     );
     File changeLogFile = File('./CHANGELOG.md');
-    String changeLogHeader = Template.parse(pubspecContent.config.changelogHeader, data: data).render();
+    String changeLogHeader = Template.parse(config.changelogHeader, data: data).render();
     String changeLogContent =
         '''$changeLogHeader
 
@@ -70,7 +78,7 @@ ${fileContent.substring(changeLogHeader.length + 2)}''';
   /// Generates the Markdown content corresponding to this entry.
   String _generateMarkdownContent({
     required ChangeLogEntry changeLogEntry,
-    required PubspecContent pubspecContent,
+    required _WriteChangelogProcessConfig config,
     required IgnoredScopesAndTypes ignoredScopes,
     required Map<String, dynamic> data,
   }) {
@@ -84,7 +92,7 @@ ${fileContent.substring(changeLogHeader.length + 2)}''';
           continue;
         }
         result += Template.parse(
-          pubspecContent.config.markdownEntryListItemTemplate,
+          config.markdownEntryListItemTemplate,
           data: {
             ...data,
             'breaking': entry.isBreakingChange,
@@ -97,6 +105,82 @@ ${fileContent.substring(changeLogHeader.length + 2)}''';
       }
     }
     return result;
+  }
+
+  /// Reads the process configuration from the pubspec.yaml file.
+  _WriteChangelogProcessConfig _readConfig(PubspecContent pubspecContent) => _WriteChangelogProcessConfig.fromYaml(readConfig(pubspecContent));
+}
+
+/// Holds the process configuration fields.
+class _WriteChangelogProcessConfig {
+  /// The changelog header.
+  /// Should be a Markdown heading 1 level title.
+  ///
+  /// Read from the `header` field in the `changelog` section
+  /// of the `release` section of the pubspec.yaml file.
+  /// Defaults to `# 📰 Changelog`.
+  final String changelogHeader;
+
+  /// The template for the title of a changelog entry.
+  /// Parsed with the following data :
+  /// - `version`: The version of the changelog entry.
+  /// - `build`: The build number of the changelog entry.
+  /// - `date`: The date of the changelog entry.
+  /// - `repo`: The Github repository, which is [githubRepository].
+  ///
+  /// Read from the `title` field in the `entry` section of the `changelog` section
+  /// of the `release` section of the pubspec.yaml file.
+  /// Defaults to `## v{{ version }}`.
+  final String markdownEntryTitleTemplate;
+
+  /// The template for the header of a changelog entry.
+  /// Parsed with the following data :
+  /// - `version`: The version of the changelog entry.
+  /// - `build`: The build number of the changelog entry.
+  /// - `date`: The date of the changelog entry.
+  /// - `repo`: The Github repository, which is [githubRepository].
+  ///
+  /// Read from the `header` field in the `entry` section of the `changelog` section
+  /// of the `release` section of the pubspec.yaml file.
+  /// Defaults to `Released on {{ date | date: "MMMM d, yyyy" }}.`.
+  final String markdownEntryHeaderTemplate;
+
+  /// The template for a list item of a changelog entry.
+  /// Parsed with the following data :
+  /// - `version`: The version of the changelog entry.
+  /// - `build`: The build number of the changelog entry.
+  /// - `date`: The date of the changelog entry.
+  /// - `repo`: The Github repository, which is [githubRepository].
+  /// - `breaking`: Whether the changelog entry is a breaking change.
+  /// - `type`: The type of the changelog entry.
+  /// - `description`: The description of the changelog entry.
+  /// - `hash`: The hash of the changelog entry.
+  ///
+  /// Read from the `item` field in the `entry` section of the `changelog` section
+  /// of the `release` section of the pubspec.yaml file.
+  /// Defaults to `* **{% if breaking %}BREAKING {% endif %}{{ type | upcase }}**: {{ description }} ({% if repo %}[#{{ hash }}](https://github.com/{{ repo }}/commit/{{ hash }}){% else %}#{{ hash }}{% endif %})`.
+  final String markdownEntryListItemTemplate;
+
+  /// Creates a new [_WriteChangelogProcessConfig] instance.
+  const _WriteChangelogProcessConfig({
+    required this.changelogHeader,
+    required this.markdownEntryTitleTemplate,
+    required this.markdownEntryHeaderTemplate,
+    required this.markdownEntryListItemTemplate,
+  });
+
+  /// Creates a [_WriteChangelogProcessConfig] from a YAML config.
+  factory _WriteChangelogProcessConfig.fromYaml(Map releaseConfig) {
+    Map changelog = releaseConfig['changelog'] ?? {};
+    Map changelogEntry = changelog['entry'] ?? {};
+    return _WriteChangelogProcessConfig(
+      changelogHeader: changelog['header'] ?? '# 📰 Changelog',
+      markdownEntryTitleTemplate: changelogEntry['title'] ?? '## v{{ version }}',
+      markdownEntryHeaderTemplate: changelogEntry['header'] ?? 'Released on {{ date | date: "MMMM d, yyyy" }}.',
+      markdownEntryListItemTemplate:
+          changelogEntry['item'] ??
+          '* **{% if breaking %}BREAKING {% endif %}{{ type | upcase }}**: {{ description }} ({% if repo %}[#{{ hash }}](https://github.com/{{ repo }}/commit/{{ hash }}){% else %}#{{ hash }}{% endif %})',
+    );
   }
 }
 

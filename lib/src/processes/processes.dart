@@ -7,6 +7,7 @@ export 'new_version.dart';
 export 'process.dart';
 export 'pub_publish.dart';
 export 'read_pubspec.dart';
+export 'update_flatpak.dart';
 export 'update_pubspec.dart';
 export 'update_snapcraft.dart';
 export 'write_changelog.dart';

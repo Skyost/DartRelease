@@ -1,23 +1,8 @@
-import 'package:release/src/processes/processes.dart';
+import 'package:release/src/processes/process.dart';
 import 'package:release/src/utils/cmd.dart';
 
 /// The `release` utility main class.
 class Release {
-  /// The default processes to run.
-  static const List<ReleaseProcess> defaultProcesses = [
-    ReadPubspecProcess(),
-    FindChangesProcess(),
-    NewVersionProcess(),
-    AskIgnoredScopesAndTypesProcess(),
-    WriteChangelogProcess(),
-    UpdatePubspecProcess(),
-    UpdateSnapcraftProcess(),
-    CommitAndPushProcess(),
-    CreateGithubReleaseProcess(),
-    CreateTagProcess(),
-    PubPublishProcess(),
-  ];
-
   /// Whether to print verbose output.
   final bool verbose;
 
@@ -30,7 +15,7 @@ class Release {
   /// Creates a new [Release] instance.
   const Release({
     this.verbose = false,
-    this.processes = defaultProcesses,
+    this.processes = ReleaseProcess.allProcesses,
     this.onResult,
   });
 
