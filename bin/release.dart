@@ -12,6 +12,11 @@ import 'package:release/release.dart';
 /// - Create a Github release.
 Future<void> main(List<String> args) async {
   ArgParser parser = ArgParser();
+  parser.addOption(
+    'processes',
+    abbr: 'p',
+    help: 'Comma separated list of processes to run. If not specified, all processes will be run.'
+  );
   parser.addFlag(
     'verbose',
     abbr: 'v',
@@ -28,8 +33,15 @@ Future<void> main(List<String> args) async {
     stdout.writeln(parser.usage);
     return;
   }
+  List<ReleaseProcess> processes = ReleaseProcess.allProcesses;
+  List<ReleaseProcess>? wantedProcesses = results.option('processes')?.split(',').map(ReleaseProcess.fromId).whereType<ReleaseProcess>().toList();
+  if (wantedProcesses != null && wantedProcesses.isNotEmpty) {
+    processes = wantedProcesses;
+  }
+  
   Release release = Release(
     verbose: results.flag('verbose'),
+    processes: processes,
     onResult: (process, result) {
       if (result is ReleaseProcessResultError) {
         stderr.writeln('An error occurred during the execution of the process ${process.runtimeType}.');
