@@ -1,6 +1,6 @@
 name: release
 description: A small utility that allows to easily update your pubspec and your Github tags on new releases.
-version: 0.1.5
+version: 0.1.6
 homepage: https://github.com/Skyost/DartRelease
 repository: https://github.com/Skyost/DartRelease
 issue_tracker: https://github.com/Skyost/DartRelease/issues

@@ -1,5 +1,12 @@
 # 📰 `release` utility changelog
 
+## v0.1.6
+Released on December 23, 2025.
+
+* **FEAT**: Added the ability to update Flatpak files. ([#ef51064](https://github.com/Skyost/DartRelease/commit/ef51064))
+* **FEAT**: Now allowing to select the processes to run through the `-p` option. ([#ccd6597](https://github.com/Skyost/DartRelease/commit/ccd6597))
+* **CHORE**: Correctly formatted the source files. ([#757f3fc](https://github.com/Skyost/DartRelease/commit/757f3fc))
+
 ## v0.1.5
 Released on August 5, 2025.
 
