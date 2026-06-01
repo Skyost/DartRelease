@@ -41,17 +41,17 @@ class UpdateFlatpakProcess with ReleaseProcess, PubspecDependantReleaseProcess {
     }
 
     XmlElement? release = XmlElement(
-      XmlName('release'),
+      const XmlName.parts('release'),
       [
-        XmlAttribute(XmlName('version'), newVersion.version.buildName()),
-        XmlAttribute(XmlName('date'), formatDate(DateTime.now())),
+        XmlAttribute(const XmlName.parts('version'), newVersion.version.buildName()),
+        XmlAttribute(const XmlName.parts('date'), formatDate(DateTime.now())),
       ],
       [
         if (githubRepository != null)
           XmlElement(
-            XmlName('url'),
+            const XmlName.parts('url'),
             [
-              XmlAttribute(XmlName('type'), 'details'),
+              XmlAttribute(const XmlName.parts('type'), 'details'),
             ],
             [
               XmlText('https://github.com/$githubRepository/releases/tag/${newVersion.version.buildName()}'),
@@ -59,9 +59,9 @@ class UpdateFlatpakProcess with ReleaseProcess, PubspecDependantReleaseProcess {
           ),
         if (changeLogEntry != null)
           XmlElement(
-            XmlName('description'),
+            const XmlName.parts('description'),
             [
-              XmlAttribute(XmlName('type'), 'changelog'),
+              XmlAttribute(const XmlName.parts('type'), 'changelog'),
             ],
             [
               _generateDescription(
@@ -77,7 +77,7 @@ class UpdateFlatpakProcess with ReleaseProcess, PubspecDependantReleaseProcess {
     XmlElement? releases = document.rootElement.findElements('releases').firstOrNull;
     if (releases == null) {
       releases = XmlElement(
-        XmlName('releases'),
+        const XmlName.parts('releases'),
         [],
         [release],
       );
@@ -118,7 +118,7 @@ class UpdateFlatpakProcess with ReleaseProcess, PubspecDependantReleaseProcess {
         if (entry.description != null) {
           result.add(
             XmlElement(
-              XmlName('li'),
+              const XmlName.parts('li'),
               [],
               [
                 XmlText(entry.description!),
@@ -129,7 +129,7 @@ class UpdateFlatpakProcess with ReleaseProcess, PubspecDependantReleaseProcess {
       }
     }
     return XmlElement(
-      XmlName('ul'),
+      const XmlName.parts('ul'),
       [],
       result,
     );

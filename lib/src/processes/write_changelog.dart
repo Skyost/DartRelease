@@ -36,7 +36,7 @@ class WriteChangelogProcess with ReleaseProcess, PubspecDependantReleaseProcess 
       'version': newVersion.version.buildName(includeBuild: false),
       'build': newVersion.version.build,
       'date': DateTime.now(),
-      if (githubRepository != null) 'repo': githubRepository,
+      'repo': ?githubRepository,
     };
 
     String markdownEntryTitle = Template.parse(config.markdownEntryTitleTemplate, data: data).render();

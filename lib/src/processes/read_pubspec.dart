@@ -51,8 +51,8 @@ class PubspecContent {
     required this.version,
     this.publishTo,
     required this.rawContent,
-    required Map content,
-  }) : _content = content;
+    required this._content,
+  });
 
   /// Creates a new [PubspecContent] instance from a YAML map.
   PubspecContent.fromYaml(Map pubspec, String content)

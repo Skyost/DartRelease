@@ -16,7 +16,7 @@ executables:
   release:
 
 environment:
-  sdk: '>=3.9.0 <4.0.0'
+  sdk: '>=3.12.0 <4.0.0'
 
 dependencies:
   args: ^2.7.0
@@ -27,8 +27,8 @@ dependencies:
   meta: '>=1.16.0 <2.0.0'
   pub_semver: ^2.2.0
   yaml: ^3.1.3
-  yaml_edit: ^2.2.3
-  xml: ^6.6.1
+  yaml_edit: ^2.2.4
+  xml: ^7.0.1
 
 dev_dependencies:
   flutter_lints: ^6.0.0
