@@ -15,7 +15,7 @@ class UpdatePubspecProcess with ReleaseProcess, PubspecDependantReleaseProcess {
   String get id => 'update-pubspec';
 
   @override
-  ReleaseProcessResult runWithPubspec(Cmd cmd, List<Object> previousValues, PubspecContent pubspecContent) {
+  Future<ReleaseProcessResult> runWithPubspec(Cmd cmd, List<Object> previousValues, PubspecContent pubspecContent) async {
     NewVersion? newVersion = findValue<NewVersion>(previousValues);
     if (newVersion == null) {
       return const ReleaseProcessResultCancelled();
@@ -27,10 +27,13 @@ class UpdatePubspecProcess with ReleaseProcess, PubspecDependantReleaseProcess {
     File pubspecFile = File('./pubspec.yaml');
     String newContent = editor.toString();
     pubspecFile.writeAsStringSync(newContent);
-    cmd.run(
+    ProcessResult result = await cmd.run(
       executable: 'dart',
       arguments: ['pub', 'get'],
     );
+    if (result.exitCode != 0) {
+      return ReleaseProcessResultError(error: '`dart pub get` failed.');
+    }
     stdout.writeln('Done.');
     return ReleaseProcessResultSuccess(
       value: PubspecUpdated(

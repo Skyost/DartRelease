@@ -25,10 +25,13 @@ class PubPublishProcess with ReleaseProcess, PubspecDependantReleaseProcess {
     }
 
     stdout.writeln('Publishing...');
-    await cmd.run(
+    ProcessResult result = await cmd.run(
       executable: 'dart',
       arguments: ['pub', 'publish', '-f'],
     );
+    if (result.exitCode != 0) {
+      return ReleaseProcessResultError(error: '`dart pub publish` failed.');
+    }
     stdout.writeln('Done.');
     return ReleaseProcessResultSuccess(
       value: PubPublished(),

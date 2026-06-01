@@ -63,8 +63,13 @@ class ReleaseProcessResultSuccess<T> extends ReleaseProcessResult {
 
 /// The result of a cancelled [ReleaseProcess].
 class ReleaseProcessResultCancelled extends ReleaseProcessResult {
+  /// Whether the release process should stop.
+  final bool stop;
+
   /// Creates a new [ReleaseProcessResultCancelled] instance.
-  const ReleaseProcessResultCancelled();
+  const ReleaseProcessResultCancelled({
+    this.stop = false,
+  });
 }
 
 /// The result of a failed [ReleaseProcess].

@@ -24,7 +24,7 @@ class NewVersionProcess with ReleaseProcess, PubspecDependantReleaseProcess {
     stdout.write('Proposed new version is "$newVersion", enter "Y" to continue or type a new version proposal. Type "N" to cancel. ');
     String input = cmd.readLine()?.toUpperCase() ?? 'N';
     if (input == 'N') {
-      return const ReleaseProcessResultCancelled();
+      return const ReleaseProcessResultCancelled(stop: true);
     }
     if (input != 'Y') {
       newVersion = Version.parse(input);

@@ -20,7 +20,19 @@ class FindChangesProcess with ReleaseProcess {
     Git git = Git(cmd: cmd);
     String? lastTag = await git.findLastTag();
     if (lastTag == null) {
-      return ReleaseProcessResultError(error: 'Cannot find last tag.');
+      bool createInitialTag = cmd.askQuestion('Cannot find any tag. Do you want to create an initial "0.0.0" tag on the first commit ?');
+      if (!createInitialTag) {
+        return const ReleaseProcessResultCancelled(stop: true);
+      }
+      stdout.writeln('Creating initial tag...');
+      bool initialTagCreated = await git.createInitialTag();
+      if (!initialTagCreated) {
+        return ReleaseProcessResultError(error: 'Initial tag creation failed.');
+      }
+      lastTag = await git.findLastTag();
+      if (lastTag == null) {
+        return ReleaseProcessResultError(error: 'Cannot find last tag.');
+      }
     }
     stdout.writeln('Last tag is "$lastTag".');
     ProcessResult result = await cmd.run(
@@ -40,7 +52,7 @@ class FindChangesProcess with ReleaseProcess {
       stdout.writeln('Here are the commits :');
       stdout.writeAll([
         for (ConventionalCommitWithHash commit in changeLogEntry.subEntries.values.expand((commits) => commits))
-          '#${commit.hash} ${commit.isBreakingChange ? 'BREAKING ' : ''}${commit.type?.toUpperCase() ?? ''} ${commit.description}'
+          '#${commit.hash} ${commit.isBreakingChange ? 'BREAKING ' : ''}${commit.type?.toUpperCase() ?? ''} ${commit.description}',
       ]);
       stdout.writeln('Please enter a comma separated list of hashes to hide.');
       String? input = cmd.readLine();
@@ -144,10 +156,7 @@ class ChangeLogEntry {
   }
 
   /// Returns the number of breaking changes.
-  int get breakingChangeCount =>
-      subEntries.values
-          .where((commits) => commits.any((commit) => commit.isBreakingChange))
-          .length;
+  int get breakingChangeCount => subEntries.values.where((commits) => commits.any((commit) => commit.isBreakingChange)).length;
 
   /// Returns the number of changes.
   int get changeCount => subEntries.values.fold(0, (previousValue, element) => previousValue + element.length);

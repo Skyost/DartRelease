@@ -14,7 +14,7 @@ class Git {
   });
 
   /// Finds the last tag of the current git repository.
-  Future<String?> findLastTag({bool autoCreate = true}) async {
+  Future<String?> findLastTag() async {
     ProcessResult result = await cmd.run(
       executable: 'git',
       arguments: ['describe', '--tags', '--abbrev=0'],
@@ -22,18 +22,21 @@ class Git {
     switch (result.exitCode) {
       case 0:
         return result.stdout.replaceAll('\n', '');
-      case 128:
-        String? firstCommit = await findLastCommit(reverse: true);
-        if (firstCommit == null || !autoCreate) {
-          return null;
-        }
-        await cmd.run(
-          executable: 'git',
-          arguments: ['tag', '-a', '0.0.0', firstCommit, '-m', 'First commit.'],
-        );
-        return findLastTag(autoCreate: false);
     }
     return null;
+  }
+
+  /// Creates the initial tag on the first commit.
+  Future<bool> createInitialTag() async {
+    String? firstCommit = await findLastCommit(reverse: true);
+    if (firstCommit == null) {
+      return false;
+    }
+    ProcessResult result = await cmd.run(
+      executable: 'git',
+      arguments: ['tag', '-a', '0.0.0', firstCommit, '-m', 'First commit.'],
+    );
+    return result.exitCode == 0;
   }
 
   /// Finds the last commit.

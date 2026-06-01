@@ -28,6 +28,8 @@ class Release {
       onResult?.call(process, result);
       if (result is ReleaseProcessResultSuccess) {
         results.add(result.value);
+      } else if (result is ReleaseProcessResultError || (result is ReleaseProcessResultCancelled && result.stop)) {
+        break;
       }
     }
   }
