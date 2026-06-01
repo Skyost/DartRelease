@@ -8,8 +8,8 @@ import 'package:release/release.dart';
 /// - Generates a changelog.
 /// - Bumps the version.
 /// - Makes a git tag.
-/// - Commit and push the changes.
-/// - Create a Github release.
+/// - Commits and pushes the changes.
+/// - Creates a Github release.
 Future<void> main(List<String> args) async {
   ArgParser parser = ArgParser();
   parser.addOption(
