@@ -30,10 +30,28 @@ class FindChangesProcess with ReleaseProcess {
     ChangeLogEntry changeLogEntry = ChangeLogEntry.parseGitLog(result.stdout);
     if (changeLogEntry.isEmpty) {
       stdout.writeln('Found no change.');
-    } else if (changeLogEntry.hasBreakingChange) {
-      stdout.writeln('Found a breaking change.');
     } else {
-      stdout.writeln('Found no breaking change.');
+      int changeCount = changeLogEntry.changeCount;
+      int breakingChangeCount = changeLogEntry.breakingChangeCount;
+      stdout.writeln('Found $changeCount ${changeCount == 1 ? 'change' : 'changes'}. ${breakingChangeCount >= 1 ? '$breakingChangeCount breaking.' : 'No breaking change detected.'}');
+    }
+    bool hideCommits = cmd.askQuestion('Do you want to hide some commits from the changelog ?');
+    if (hideCommits) {
+      stdout.writeln('Here are the commits :');
+      stdout.writeAll([
+        for (ConventionalCommitWithHash commit in changeLogEntry.subEntries.values.expand((commits) => commits))
+          '#${commit.hash} ${commit.isBreakingChange ? 'BREAKING ' : ''}${commit.type?.toUpperCase() ?? ''} ${commit.description}'
+      ]);
+      stdout.writeln('Please enter a comma separated list of hashes to hide.');
+      String? input = cmd.readLine();
+      if (input != null) {
+        List<String> hashes = input.split(',');
+        for (String hash in hashes) {
+          for (List<ConventionalCommitWithHash> commits in changeLogEntry.subEntries.values) {
+            commits.removeWhere((commit) => commit.hash == hash);
+          }
+        }
+      }
     }
     return ReleaseProcessResultSuccess(value: changeLogEntry);
   }
@@ -54,13 +72,9 @@ class ChangeLogEntry {
   /// The sub-entries (ie. messages).
   final SplayTreeMap<String, List<ConventionalCommitWithHash>> subEntries;
 
-  /// Whether this entry has a breaking change.
-  bool hasBreakingChange;
-
   /// Creates a new changelog entry instance.
   ChangeLogEntry({
     SplayTreeMap<String, List<ConventionalCommitWithHash>>? subEntries,
-    this.hasBreakingChange = false,
   }) : subEntries = subEntries ?? SplayTreeMap(_compareTypes);
 
   /// Parses a git log and returns a changelog entry.
@@ -94,7 +108,6 @@ class ChangeLogEntry {
       commitsOfType.add(commit);
       commitsOfType.sort(_compareConventionalCommits);
     }
-    hasBreakingChange = hasBreakingChange || commit.isBreakingChange;
   }
 
   /// Allows to compare two commit types.
@@ -121,6 +134,7 @@ class ChangeLogEntry {
   /// Creates a new version, bumped from the current [version].
   Version bumpVersion(Version version) {
     int? buildNumber = int.tryParse(version.build.join());
+    bool hasBreakingChange = this.hasBreakingChange;
     return Version(
       version.major,
       hasBreakingChange ? (version.minor + 1) : version.minor,
@@ -128,6 +142,18 @@ class ChangeLogEntry {
       build: buildNumber == null ? null : (buildNumber + 1).toString(),
     );
   }
+
+  /// Returns the number of breaking changes.
+  int get breakingChangeCount =>
+      subEntries.values
+          .where((commits) => commits.any((commit) => commit.isBreakingChange))
+          .length;
+
+  /// Returns the number of changes.
+  int get changeCount => subEntries.values.fold(0, (previousValue, element) => previousValue + element.length);
+
+  /// Whether this entry has breaking changes.
+  bool get hasBreakingChange => breakingChangeCount > 0;
 }
 
 /// Just a wrapper for a [ConventionalCommit] holding a [hash].
