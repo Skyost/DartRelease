@@ -1,5 +1,14 @@
 # 📰 `release` utility changelog
 
+## v0.1.7
+Released on June 1, 2026.
+
+* **FEAT**: Added support for ignoring specific commit hashes. ([#a71c7da](https://github.com/Skyost/DartRelease/commit/a71c7da))
+* **FEAT**: Added the ability to hide commits from the changelog and improved change reporting. ([#cd57286](https://github.com/Skyost/DartRelease/commit/cd57286))
+* **FEAT**: Improved command error handling, process cancellation flow, and initial tag creation. ([#a0ee403](https://github.com/Skyost/DartRelease/commit/a0ee403))
+* **CHORE**: Updated SDK version and dependencies. ([#03f73f3](https://github.com/Skyost/DartRelease/commit/03f73f3))
+* **REFACTOR**: Introduced `ReleaseProcessResultValue` mixin for type-safe process results. ([#e439360](https://github.com/Skyost/DartRelease/commit/e439360))
+
 ## v0.1.6
 Released on December 23, 2025.
 
