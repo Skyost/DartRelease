@@ -15,7 +15,7 @@ class UpdatePubspecProcess with ReleaseProcess, PubspecDependantReleaseProcess {
   String get id => 'update-pubspec';
 
   @override
-  Future<ReleaseProcessResult> runWithPubspec(Cmd cmd, List<Object> previousValues, PubspecContent pubspecContent) async {
+  Future<ReleaseProcessResult> runWithPubspec(Cmd cmd, List<ReleaseProcessResultValue> previousValues, PubspecContent pubspecContent) async {
     NewVersion? newVersion = findValue<NewVersion>(previousValues);
     if (newVersion == null) {
       return const ReleaseProcessResultCancelled();
@@ -44,7 +44,7 @@ class UpdatePubspecProcess with ReleaseProcess, PubspecDependantReleaseProcess {
 }
 
 /// The result of the [UpdatePubspecProcess].
-class PubspecUpdated {
+class PubspecUpdated with ReleaseProcessResultValue {
   /// The new content of the pubspec.yaml file.
   final String newContent;
 

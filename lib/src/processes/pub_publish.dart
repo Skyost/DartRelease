@@ -39,4 +39,5 @@ class PubPublishProcess with ReleaseProcess, PubspecDependantReleaseProcess {
   }
 }
 
-class PubPublished {}
+/// The result of the [PubPublishProcess].
+class PubPublished with ReleaseProcessResultValue {}

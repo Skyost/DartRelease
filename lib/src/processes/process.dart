@@ -27,11 +27,11 @@ mixin ReleaseProcess {
   String get id;
 
   /// Runs the process.
-  FutureOr<ReleaseProcessResult> run(Cmd cmd, List<Object> previousValues);
+  FutureOr<ReleaseProcessResult> run(Cmd cmd, List<ReleaseProcessResultValue> previousValues);
 
   /// Finds the first success value in the list.
   @protected
-  T? findValue<T>(List<Object> previousValues) => previousValues.whereType<T>().firstOrNull;
+  T? findValue<T extends ReleaseProcessResultValue>(List<ReleaseProcessResultValue> previousValues) => previousValues.whereType<T>().firstOrNull;
 
   /// Finds a [ReleaseProcess] by its id.
   static ReleaseProcess? fromId(String id) {
@@ -44,6 +44,9 @@ mixin ReleaseProcess {
   }
 }
 
+/// A value used by a [ReleaseProcess].
+mixin ReleaseProcessResultValue {}
+
 /// The result of a [ReleaseProcess].
 sealed class ReleaseProcessResult {
   /// Creates a new [ReleaseProcessResult] instance.
@@ -51,7 +54,7 @@ sealed class ReleaseProcessResult {
 }
 
 /// The result of a successful [ReleaseProcess].
-class ReleaseProcessResultSuccess<T> extends ReleaseProcessResult {
+class ReleaseProcessResultSuccess<T extends ReleaseProcessResultValue> extends ReleaseProcessResult {
   /// The value of the result.
   final T value;
 

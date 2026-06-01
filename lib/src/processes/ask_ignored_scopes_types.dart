@@ -79,7 +79,7 @@ class _AskIgnoredScopesAndTypesProcessConfig {
 }
 
 /// The result of the [AskIgnoredScopesAndTypesProcess].
-class IgnoredScopesAndTypes {
+class IgnoredScopesAndTypes with ReleaseProcessResultValue {
   /// The scopes to ignore.
   final List<String> scopes;
 

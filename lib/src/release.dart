@@ -22,7 +22,7 @@ class Release {
   /// Runs the release process.
   Future<void> release() async {
     Cmd cmd = Cmd(verbose: verbose);
-    List<Object> results = [];
+    List<ReleaseProcessResultValue> results = [];
     for (ReleaseProcess process in processes) {
       ReleaseProcessResult result = await process.run(cmd, results);
       onResult?.call(process, result);

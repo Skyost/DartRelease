@@ -15,7 +15,7 @@ class NewVersionProcess with ReleaseProcess, PubspecDependantReleaseProcess {
   String get id => 'new-version';
 
   @override
-  ReleaseProcessResult runWithPubspec(Cmd cmd, List<Object> previousValues, PubspecContent pubspecContent) {
+  ReleaseProcessResult runWithPubspec(Cmd cmd, List<ReleaseProcessResultValue> previousValues, PubspecContent pubspecContent) {
     ChangeLogEntry? changeLogEntry = findValue<ChangeLogEntry>(previousValues);
     if (changeLogEntry == null) {
       return const ReleaseProcessResultCancelled();
@@ -38,7 +38,7 @@ class NewVersionProcess with ReleaseProcess, PubspecDependantReleaseProcess {
 }
 
 /// The result of the [NewVersionProcess].
-class NewVersion {
+class NewVersion with ReleaseProcessResultValue {
   /// The new version.
   final Version version;
 

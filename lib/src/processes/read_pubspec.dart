@@ -33,7 +33,7 @@ class ReadPubspecProcess with ReleaseProcess {
 }
 
 /// The result of the [ReadPubspecProcess].
-class PubspecContent {
+class PubspecContent with ReleaseProcessResultValue {
   /// The current version.
   final Version version;
 
@@ -67,7 +67,7 @@ class PubspecContent {
 /// A process that can be configured through the pubspec.yaml file.
 mixin PubspecDependantReleaseProcess on ReleaseProcess {
   @override
-  FutureOr<ReleaseProcessResult> run(Cmd cmd, List<Object> previousValues) {
+  FutureOr<ReleaseProcessResult> run(Cmd cmd, List<ReleaseProcessResultValue> previousValues) {
     PubspecContent? pubspecContent = findValue<PubspecContent>(previousValues);
     if (pubspecContent == null) {
       return const ReleaseProcessResultCancelled();
@@ -76,7 +76,7 @@ mixin PubspecDependantReleaseProcess on ReleaseProcess {
   }
 
   /// Runs the process with the [pubspecContent].
-  FutureOr<ReleaseProcessResult> runWithPubspec(Cmd cmd, List<Object> previousValues, PubspecContent pubspecContent);
+  FutureOr<ReleaseProcessResult> runWithPubspec(Cmd cmd, List<ReleaseProcessResultValue> previousValues, PubspecContent pubspecContent);
 
   /// Reads the configuration from the pubspec.yaml file.
   Map readConfig(PubspecContent pubspecContent) => pubspecContent._content['release'] ?? {};

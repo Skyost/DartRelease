@@ -13,7 +13,7 @@ class CommitAndPushProcess with ReleaseProcess, PubspecDependantReleaseProcess {
   String get id => 'commit-and-push';
 
   @override
-  Future<ReleaseProcessResult> runWithPubspec(Cmd cmd, List<Object> previousValues, PubspecContent pubspecContent) async {
+  Future<ReleaseProcessResult> runWithPubspec(Cmd cmd, List<ReleaseProcessResultValue> previousValues, PubspecContent pubspecContent) async {
     bool hasPubspecChanged = findValue<PubspecUpdated>(previousValues) != null;
     FlatpakUpdated? flatpakUpdated = findValue<FlatpakUpdated>(previousValues);
     SnapcraftUpdated? snapcraftUpdated = findValue<SnapcraftUpdated>(previousValues);
@@ -102,7 +102,7 @@ class _CommitAndPushProcessConfig {
 }
 
 /// The result of the [CommitAndPushProcess].
-class CommitPushResult {
+class CommitPushResult with ReleaseProcessResultValue {
   /// Whether the changes were committed.
   final bool committed;
 

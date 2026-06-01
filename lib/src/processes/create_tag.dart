@@ -16,7 +16,7 @@ class CreateTagProcess with ReleaseProcess {
   String get id => 'create-tag';
 
   @override
-  Future<ReleaseProcessResult> run(Cmd cmd, List<Object> previousValues) async {
+  Future<ReleaseProcessResult> run(Cmd cmd, List<ReleaseProcessResultValue> previousValues) async {
     NewVersion? newVersion = findValue<NewVersion>(previousValues);
     CommitPushResult? commitPushResult = findValue<CommitPushResult>(previousValues);
     if (newVersion == null || commitPushResult?.pushed != false) {
@@ -42,7 +42,7 @@ class CreateTagProcess with ReleaseProcess {
 }
 
 /// The result of the [CreateTagProcess].
-class TagCreated {
+class TagCreated with ReleaseProcessResultValue {
   /// The version of the tag.
   final Version version;
 

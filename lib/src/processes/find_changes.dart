@@ -52,7 +52,7 @@ class FindChangesProcess with ReleaseProcess {
       stdout.writeln('Here are the commits :');
       stdout.writeAll([
         for (ConventionalCommitWithHash commit in changeLogEntry.subEntries.values.expand((commits) => commits))
-          '#${commit.hash} ${commit.isBreakingChange ? 'BREAKING ' : ''}${commit.type?.toUpperCase() ?? ''} ${commit.description}',
+          '#${commit.hash} ${commit.isBreakingChange ? 'BREAKING ' : ''}${commit.type?.toUpperCase() ?? ''} ${commit.description}\n',
       ]);
       stdout.writeln('Please enter a comma separated list of hashes to hide.');
       String? input = cmd.readLine();
@@ -70,7 +70,7 @@ class FindChangesProcess with ReleaseProcess {
 }
 
 /// A simple changelog entry, containing sub-entries.
-class ChangeLogEntry {
+class ChangeLogEntry with ReleaseProcessResultValue {
   /// The types, ordered.
   static const List<String> orderedTypes = [
     'feat',

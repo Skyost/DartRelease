@@ -18,7 +18,7 @@ class UpdateFlatpakProcess with ReleaseProcess, PubspecDependantReleaseProcess {
   String get id => 'update-flatpak';
 
   @override
-  ReleaseProcessResult runWithPubspec(Cmd cmd, List<Object> previousValues, PubspecContent pubspecContent) {
+  ReleaseProcessResult runWithPubspec(Cmd cmd, List<ReleaseProcessResultValue> previousValues, PubspecContent pubspecContent) {
     IgnoredScopesAndTypes? ignoredScopes = findValue<IgnoredScopesAndTypes>(previousValues);
     NewVersion? newVersion = findValue<NewVersion>(previousValues);
     if (ignoredScopes == null || newVersion == null) {
@@ -155,7 +155,7 @@ class _UpdateFlatpakProcessConfig {
 }
 
 /// The result of the [UpdateFlatpakProcess].
-class FlatpakUpdated {
+class FlatpakUpdated with ReleaseProcessResultValue {
   /// The path to the flatpak metadata file.
   final String flatpakPath;
 

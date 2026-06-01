@@ -18,7 +18,7 @@ class WriteChangelogProcess with ReleaseProcess, PubspecDependantReleaseProcess 
   String get id => 'write-changelog';
 
   @override
-  ReleaseProcessResult runWithPubspec(Cmd cmd, List<Object> previousValues, PubspecContent pubspecContent) {
+  ReleaseProcessResult runWithPubspec(Cmd cmd, List<ReleaseProcessResultValue> previousValues, PubspecContent pubspecContent) {
     ChangeLogEntry? changeLogEntry = findValue<ChangeLogEntry>(previousValues);
     IgnoredScopesAndTypes? ignoredScopes = findValue<IgnoredScopesAndTypes>(previousValues);
     NewVersion? newVersion = findValue<NewVersion>(previousValues);
@@ -185,7 +185,7 @@ class _WriteChangelogProcessConfig {
 }
 
 /// The result of the [WriteChangelogProcess].
-class MarkdownEntryContent {
+class MarkdownEntryContent with ReleaseProcessResultValue {
   /// The content of the entry.
   final String content;
 

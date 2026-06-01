@@ -21,7 +21,7 @@ class CreateGithubReleaseProcess with ReleaseProcess, PubspecDependantReleasePro
   String get id => 'create-github-release';
 
   @override
-  Future<ReleaseProcessResult> runWithPubspec(Cmd cmd, List<Object> previousValues, PubspecContent pubspecContent) async {
+  Future<ReleaseProcessResult> runWithPubspec(Cmd cmd, List<ReleaseProcessResultValue> previousValues, PubspecContent pubspecContent) async {
     NewVersion? newVersion = findValue<NewVersion>(previousValues);
     if (newVersion == null) {
       return const ReleaseProcessResultCancelled();
@@ -80,7 +80,7 @@ class CreateGithubReleaseProcess with ReleaseProcess, PubspecDependantReleasePro
 }
 
 /// The result of the [CreateGithubReleaseProcess].
-class GithubReleaseCreated {
+class GithubReleaseCreated with ReleaseProcessResultValue {
   /// Whether the tags were fetched.
   final bool fetchResult;
 

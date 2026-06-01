@@ -16,7 +16,7 @@ class UpdateSnapcraftProcess with ReleaseProcess, PubspecDependantReleaseProcess
   String get id => 'update-snapcraft';
 
   @override
-  ReleaseProcessResult runWithPubspec(Cmd cmd, List<Object> previousValues, PubspecContent pubspecContent) {
+  ReleaseProcessResult runWithPubspec(Cmd cmd, List<ReleaseProcessResultValue> previousValues, PubspecContent pubspecContent) {
     NewVersion? newVersion = findValue<NewVersion>(previousValues);
     if (newVersion == null) {
       return const ReleaseProcessResultCancelled();
@@ -65,7 +65,7 @@ class _UpdateSnapcraftProcessConfig {
 }
 
 /// The result of the [UpdateSnapcraftProcess].
-class SnapcraftUpdated {
+class SnapcraftUpdated with ReleaseProcessResultValue {
   /// The path to the snapcraft.yaml file.
   final String snapcraftPath;
 
