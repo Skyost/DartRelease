@@ -22,8 +22,8 @@ It takes care of :
 Also : almost everything is configurable.
 
 > [!WARNING]  
-> Currently, `release` has only been tested on Windows. Feel free to try it on other platforms and
-> share your feedback !
+> Currently, `release` has only been tested on Windows and Linux.
+> Feel free to try it on other platforms and share your feedback !
 
 ## Getting Started
 
