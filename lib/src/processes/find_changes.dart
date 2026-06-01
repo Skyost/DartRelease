@@ -16,7 +16,7 @@ class FindChangesProcess with ReleaseProcess {
   String get id => 'find-changes';
 
   @override
-  Future<ReleaseProcessResult> run(Cmd cmd, List<Object> previousValues) async {
+  Future<ReleaseProcessResult> run(Cmd cmd, List<ReleaseProcessResultValue> previousValues) async {
     Git git = Git(cmd: cmd);
     String? lastTag = await git.findLastTag();
     if (lastTag == null) {
@@ -46,24 +46,6 @@ class FindChangesProcess with ReleaseProcess {
       int changeCount = changeLogEntry.changeCount;
       int breakingChangeCount = changeLogEntry.breakingChangeCount;
       stdout.writeln('Found $changeCount ${changeCount == 1 ? 'change' : 'changes'}. ${breakingChangeCount >= 1 ? '$breakingChangeCount breaking.' : 'No breaking change detected.'}');
-    }
-    bool hideCommits = cmd.askQuestion('Do you want to hide some commits from the changelog ?');
-    if (hideCommits) {
-      stdout.writeln('Here are the commits :');
-      stdout.writeAll([
-        for (ConventionalCommitWithHash commit in changeLogEntry.subEntries.values.expand((commits) => commits))
-          '#${commit.hash} ${commit.isBreakingChange ? 'BREAKING ' : ''}${commit.type?.toUpperCase() ?? ''} ${commit.description}\n',
-      ]);
-      stdout.writeln('Please enter a comma separated list of hashes to hide.');
-      String? input = cmd.readLine();
-      if (input != null) {
-        List<String> hashes = input.split(',');
-        for (String hash in hashes) {
-          for (List<ConventionalCommitWithHash> commits in changeLogEntry.subEntries.values) {
-            commits.removeWhere((commit) => commit.hash == hash);
-          }
-        }
-      }
     }
     return ReleaseProcessResultSuccess(value: changeLogEntry);
   }

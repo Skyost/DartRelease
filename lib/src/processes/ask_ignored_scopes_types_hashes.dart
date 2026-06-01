@@ -3,16 +3,16 @@ import 'dart:io';
 import 'package:release/src/processes/processes.dart';
 import 'package:release/src/utils/cmd.dart';
 
-/// A process that asks the user to enter a comma separated list of scopes and types to ignore.
-class AskIgnoredScopesAndTypesProcess with ReleaseProcess, PubspecDependantReleaseProcess {
-  /// Creates a new [AskIgnoredScopesAndTypesProcess] instance.
-  const AskIgnoredScopesAndTypesProcess();
+/// A process that asks the user to enter a comma separated list of scopes, types and hashes to ignore.
+class AskIgnoredScopesTypesHashesProcess with ReleaseProcess, PubspecDependantReleaseProcess {
+  /// Creates a new [AskIgnoredScopesTypesHashesProcess] instance.
+  const AskIgnoredScopesTypesHashesProcess();
 
   @override
-  String get id => 'ask-ignored-scopes-and-types';
+  String get id => 'ask-ignored-scopes-types-hashes';
 
   @override
-  ReleaseProcessResult runWithPubspec(Cmd cmd, List<Object> previousValues, PubspecContent pubspecContent) {
+  ReleaseProcessResult runWithPubspec(Cmd cmd, List<ReleaseProcessResultValue> previousValues, PubspecContent pubspecContent) {
     _AskIgnoredScopesAndTypesProcessConfig config = _readConfig(pubspecContent);
     List<String> scopes = config.defaultIgnoredScopes;
     stdout.write('Enter a comma separated list of scopes to ignore (default is "${scopes.join(', ')}") or "Y" to continue. ');
@@ -32,10 +32,35 @@ class AskIgnoredScopesAndTypesProcess with ReleaseProcess, PubspecDependantRelea
       ];
     }
 
+    List<String> hashes = [];
+    bool hideCommits = cmd.askQuestion('Do you want to ignore some other specific commits ?');
+    if (hideCommits) {
+      ChangeLogEntry? changeLogEntry = findValue<ChangeLogEntry>(previousValues);
+      if (changeLogEntry != null) {
+        stdout.writeln('Here are the commits :');
+        stdout.writeAll([
+          for (ConventionalCommitWithHash commit in changeLogEntry.subEntries.values.expand((commits) => commits))
+            '#${commit.hash} ${commit.isBreakingChange ? 'BREAKING ' : ''}${commit.type?.toUpperCase() ?? ''} ${commit.description}\n',
+        ]);
+      }
+      stdout.writeln('Please enter a comma separated list of hashes to hide.');
+      String? input = cmd.readLine();
+      if (input != null) {
+        hashes = input.split(',').map((hash) {
+          String trimmed = hash.trim();
+          if (trimmed.startsWith('#')) {
+            return trimmed.substring(1);
+          }
+          return trimmed;
+        }).toList();
+      }
+    }
+
     return ReleaseProcessResultSuccess(
-      value: IgnoredScopesAndTypes(
+      value: IgnoredScopesTypesHashes(
         scopes: scopes,
         types: types,
+        hashes: hashes,
       ),
     );
   }
@@ -78,17 +103,21 @@ class _AskIgnoredScopesAndTypesProcessConfig {
   }
 }
 
-/// The result of the [AskIgnoredScopesAndTypesProcess].
-class IgnoredScopesAndTypes with ReleaseProcessResultValue {
+/// The result of the [AskIgnoredScopesTypesHashesProcess].
+class IgnoredScopesTypesHashes with ReleaseProcessResultValue {
   /// The scopes to ignore.
   final List<String> scopes;
 
   /// The types to ignore.
   final List<String> types;
 
-  /// Creates a new [IgnoredScopesAndTypes] instance.
-  const IgnoredScopesAndTypes({
+  /// The hashes to ignore.
+  final List<String> hashes;
+
+  /// Creates a new [IgnoredScopesTypesHashes] instance.
+  const IgnoredScopesTypesHashes({
     required this.scopes,
     required this.types,
+    required this.hashes,
   });
 }

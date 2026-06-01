@@ -12,7 +12,7 @@ mixin ReleaseProcess {
     ReadPubspecProcess(),
     FindChangesProcess(),
     NewVersionProcess(),
-    AskIgnoredScopesAndTypesProcess(),
+    AskIgnoredScopesTypesHashesProcess(),
     WriteChangelogProcess(),
     UpdatePubspecProcess(),
     UpdateFlatpakProcess(),

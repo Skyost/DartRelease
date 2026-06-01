@@ -14,7 +14,7 @@ class PubPublishProcess with ReleaseProcess, PubspecDependantReleaseProcess {
   String get id => 'pub-publish';
 
   @override
-  Future<ReleaseProcessResult> runWithPubspec(Cmd cmd, List<Object> previousValues, PubspecContent pubspecContent) async {
+  Future<ReleaseProcessResult> runWithPubspec(Cmd cmd, List<ReleaseProcessResultValue> previousValues, PubspecContent pubspecContent) async {
     if (pubspecContent.publishTo == 'none') {
       return const ReleaseProcessResultCancelled();
     }

@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:liquify/liquify.dart';
-import 'package:release/src/processes/ask_ignored_scopes_types.dart';
+import 'package:release/src/processes/ask_ignored_scopes_types_hashes.dart';
 import 'package:release/src/processes/find_changes.dart';
 import 'package:release/src/processes/new_version.dart';
 import 'package:release/src/processes/process.dart';
@@ -20,9 +20,9 @@ class WriteChangelogProcess with ReleaseProcess, PubspecDependantReleaseProcess 
   @override
   ReleaseProcessResult runWithPubspec(Cmd cmd, List<ReleaseProcessResultValue> previousValues, PubspecContent pubspecContent) {
     ChangeLogEntry? changeLogEntry = findValue<ChangeLogEntry>(previousValues);
-    IgnoredScopesAndTypes? ignoredScopes = findValue<IgnoredScopesAndTypes>(previousValues);
+    IgnoredScopesTypesHashes? ignoredScopesTypesHashes = findValue<IgnoredScopesTypesHashes>(previousValues);
     NewVersion? newVersion = findValue<NewVersion>(previousValues);
-    if (changeLogEntry == null || ignoredScopes == null || newVersion == null) {
+    if (changeLogEntry == null || ignoredScopesTypesHashes == null || newVersion == null) {
       return const ReleaseProcessResultCancelled();
     }
 
@@ -47,7 +47,7 @@ ${Template.parse(config.markdownEntryHeaderTemplate, data: data).render()}
     String markdownEntryContent = _generateMarkdownContent(
       changeLogEntry: changeLogEntry,
       config: config,
-      ignoredScopes: ignoredScopes,
+      ignoredScopesTypesHashes: ignoredScopesTypesHashes,
       data: data,
     );
     File changeLogFile = File('./CHANGELOG.md');
@@ -79,16 +79,19 @@ ${fileContent.substring(changeLogHeader.length + 2)}''';
   String _generateMarkdownContent({
     required ChangeLogEntry changeLogEntry,
     required _WriteChangelogProcessConfig config,
-    required IgnoredScopesAndTypes ignoredScopes,
+    required IgnoredScopesTypesHashes ignoredScopesTypesHashes,
     required Map<String, dynamic> data,
   }) {
     String result = '';
     for (String type in changeLogEntry.subEntries.keys) {
-      if (ignoredScopes.types.contains(type)) {
+      if (ignoredScopesTypesHashes.types.contains(type)) {
         continue;
       }
       for (ConventionalCommitWithHash entry in changeLogEntry.subEntries[type]!) {
-        if (entry.scopes.firstWhere(ignoredScopes.scopes.contains, orElse: () => '').isNotEmpty) {
+        if (ignoredScopesTypesHashes.hashes.contains(entry.hash)) {
+          continue;
+        }
+        if (entry.scopes.firstWhere(ignoredScopesTypesHashes.scopes.contains, orElse: () => '').isNotEmpty) {
           continue;
         }
         result += Template.parse(

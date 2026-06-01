@@ -15,7 +15,7 @@ class ReadPubspecProcess with ReleaseProcess {
   String get id => 'read-pubspec';
 
   @override
-  ReleaseProcessResult run(Cmd cmd, List<Object> previousValues) {
+  ReleaseProcessResult run(Cmd cmd, List<ReleaseProcessResultValue> previousValues) {
     File pubspecFile = File('./pubspec.yaml');
     if (!pubspecFile.existsSync()) {
       return ReleaseProcessResultError(error: 'Cannot find pubspec.yaml at "${pubspecFile.path}".');

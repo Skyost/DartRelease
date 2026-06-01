@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:release/src/processes/ask_ignored_scopes_types.dart';
+import 'package:release/src/processes/ask_ignored_scopes_types_hashes.dart';
 import 'package:release/src/processes/find_changes.dart';
 import 'package:release/src/processes/new_version.dart';
 import 'package:release/src/processes/process.dart';
@@ -19,7 +19,7 @@ class UpdateFlatpakProcess with ReleaseProcess, PubspecDependantReleaseProcess {
 
   @override
   ReleaseProcessResult runWithPubspec(Cmd cmd, List<ReleaseProcessResultValue> previousValues, PubspecContent pubspecContent) {
-    IgnoredScopesAndTypes? ignoredScopes = findValue<IgnoredScopesAndTypes>(previousValues);
+    IgnoredScopesTypesHashes? ignoredScopes = findValue<IgnoredScopesTypesHashes>(previousValues);
     NewVersion? newVersion = findValue<NewVersion>(previousValues);
     if (ignoredScopes == null || newVersion == null) {
       return const ReleaseProcessResultCancelled();
@@ -103,7 +103,7 @@ class UpdateFlatpakProcess with ReleaseProcess, PubspecDependantReleaseProcess {
 
   /// Generates the description of a given changelog entry.
   XmlElement _generateDescription({
-    required IgnoredScopesAndTypes ignoredScopes,
+    required IgnoredScopesTypesHashes ignoredScopes,
     required ChangeLogEntry changeLogEntry,
   }) {
     List<XmlElement> result = [];

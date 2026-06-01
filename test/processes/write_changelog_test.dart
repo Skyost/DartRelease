@@ -32,7 +32,7 @@ abcdef2 test: add coverage
         [
           _pubspecContent(),
           changeLogEntry,
-          const IgnoredScopesAndTypes(scopes: ['internal'], types: ['test']),
+          const IgnoredScopesTypesHashes(scopes: ['internal'], types: ['test']),
           NewVersion(version: Version.parse('1.2.3+4')),
         ],
       );

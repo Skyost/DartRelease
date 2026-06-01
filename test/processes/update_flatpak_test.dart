@@ -39,7 +39,7 @@ abcdef2 test: add coverage
         [
           _pubspecContent(flatpakPath: flatpakFile.path),
           changeLogEntry,
-          const IgnoredScopesAndTypes(scopes: ['internal'], types: ['test']),
+          const IgnoredScopesTypesHashes(scopes: ['internal'], types: ['test']),
           NewVersion(version: Version.parse('1.2.3+4')),
         ],
       );
@@ -62,7 +62,7 @@ abcdef2 test: add coverage
         const Cmd(verbose: false),
         [
           _pubspecContent(),
-          const IgnoredScopesAndTypes(scopes: [], types: []),
+          const IgnoredScopesTypesHashes(scopes: [], types: []),
           NewVersion(version: Version.parse('1.2.3+4')),
         ],
       );
