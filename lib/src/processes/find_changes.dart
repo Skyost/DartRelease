@@ -64,12 +64,10 @@ class ChangeLogEntry with ReleaseProcessResultValue {
   ];
 
   /// The sub-entries (ie. messages).
-  final SplayTreeMap<String, List<ConventionalCommitWithHash>> subEntries;
+  final SplayTreeMap<String, List<ConventionalCommitWithHash>> _subEntries;
 
   /// Creates a new changelog entry instance.
-  ChangeLogEntry({
-    SplayTreeMap<String, List<ConventionalCommitWithHash>>? subEntries,
-  }) : subEntries = subEntries ?? SplayTreeMap(_compareTypes);
+  ChangeLogEntry() : _subEntries = SplayTreeMap(_compareTypes);
 
   /// Parses a git log and returns a changelog entry.
   static ChangeLogEntry parseGitLog(String gitLog) {
@@ -86,13 +84,13 @@ class ChangeLogEntry with ReleaseProcessResultValue {
   }
 
   /// Whether this entry is empty.
-  bool get isEmpty => subEntries.isEmpty;
+  bool get isEmpty => _subEntries.isEmpty;
 
   /// Adds a sub-entry to the list.
   void addSubEntry(ConventionalCommitWithHash commit) {
-    List<ConventionalCommitWithHash>? commitsOfType = subEntries[commit.type!];
+    List<ConventionalCommitWithHash>? commitsOfType = _subEntries[commit.type!];
     if (commitsOfType == null) {
-      subEntries[commit.type!] = [commit];
+      _subEntries[commit.type!] = [commit];
     } else {
       for (ConventionalCommitWithHash commitWithHash in commitsOfType) {
         if (commitWithHash.description == commit.description) {
@@ -138,13 +136,42 @@ class ChangeLogEntry with ReleaseProcessResultValue {
   }
 
   /// Returns the number of breaking changes.
-  int get breakingChangeCount => subEntries.values.where((commits) => commits.any((commit) => commit.isBreakingChange)).length;
+  int get breakingChangeCount => _subEntries.values.where((commits) => commits.any((commit) => commit.isBreakingChange)).length;
 
   /// Returns the number of changes.
-  int get changeCount => subEntries.values.fold(0, (previousValue, element) => previousValue + element.length);
+  int get changeCount => _subEntries.values.fold(0, (previousValue, element) => previousValue + element.length);
 
   /// Whether this entry has breaking changes.
   bool get hasBreakingChange => breakingChangeCount > 0;
+
+  /// Filters the changelog entry.
+  ChangeLogEntry filter({
+    List<String> ignoredScopes = const [],
+    List<String> ignoredTypes = const [],
+    List<String> ignoredHashes = const [],
+  }) {
+    ChangeLogEntry result = ChangeLogEntry();
+    for (String type in _subEntries.keys) {
+      if (ignoredTypes.contains(type)) {
+        continue;
+      }
+      for (ConventionalCommitWithHash entry in _subEntries[type]!) {
+        if (ignoredHashes.contains(entry.hash) || entry.scopes.firstWhere(ignoredScopes.contains, orElse: () => '').isNotEmpty) {
+          continue;
+        }
+        result._subEntries[type] ??= [];
+        result._subEntries[type]!.add(entry);
+      }
+      // result.subEntries[type]!.sort(_compareConventionalCommits);
+    }
+    return result;
+  }
+
+  /// Returns the types.
+  Iterable<String> get types => _subEntries.keys;
+
+  /// Returns the sub-entries.
+  List<ConventionalCommitWithHash>? operator [](String type) => _subEntries[type]?.toList(growable: false);
 }
 
 /// Just a wrapper for a [ConventionalCommit] holding a [hash].

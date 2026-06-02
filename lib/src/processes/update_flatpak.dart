@@ -19,9 +19,9 @@ class UpdateFlatpakProcess with ReleaseProcess, PubspecDependantReleaseProcess {
 
   @override
   ReleaseProcessResult runWithPubspec(Cmd cmd, List<ReleaseProcessResultValue> previousValues, PubspecContent pubspecContent) {
-    IgnoredScopesTypesHashes? ignoredScopes = findValue<IgnoredScopesTypesHashes>(previousValues);
+    IgnoredScopesTypesHashes? ignoredScopesTypesHashes = findValue<IgnoredScopesTypesHashes>(previousValues);
     NewVersion? newVersion = findValue<NewVersion>(previousValues);
-    if (ignoredScopes == null || newVersion == null) {
+    if (ignoredScopesTypesHashes == null || newVersion == null) {
       return const ReleaseProcessResultCancelled();
     }
     _UpdateFlatpakProcessConfig config = _readConfig(pubspecContent);
@@ -65,8 +65,11 @@ class UpdateFlatpakProcess with ReleaseProcess, PubspecDependantReleaseProcess {
             ],
             [
               _generateDescription(
-                ignoredScopes: ignoredScopes,
-                changeLogEntry: changeLogEntry,
+                changeLogEntry: changeLogEntry.filter(
+                  ignoredScopes: ignoredScopesTypesHashes.scopes,
+                  ignoredTypes: ignoredScopesTypesHashes.types,
+                  ignoredHashes: ignoredScopesTypesHashes.hashes,
+                ),
               ),
             ],
           ),
@@ -103,18 +106,11 @@ class UpdateFlatpakProcess with ReleaseProcess, PubspecDependantReleaseProcess {
 
   /// Generates the description of a given changelog entry.
   XmlElement _generateDescription({
-    required IgnoredScopesTypesHashes ignoredScopes,
     required ChangeLogEntry changeLogEntry,
   }) {
     List<XmlElement> result = [];
-    for (String type in changeLogEntry.subEntries.keys) {
-      if (ignoredScopes.types.contains(type)) {
-        continue;
-      }
-      for (ConventionalCommitWithHash entry in changeLogEntry.subEntries[type]!) {
-        if (entry.scopes.firstWhere(ignoredScopes.scopes.contains, orElse: () => '').isNotEmpty) {
-          continue;
-        }
+    for (String type in changeLogEntry.types) {
+      for (ConventionalCommitWithHash entry in changeLogEntry[type]!) {
         if (entry.description != null) {
           result.add(
             XmlElement(

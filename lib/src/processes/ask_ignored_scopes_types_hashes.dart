@@ -35,24 +35,35 @@ class AskIgnoredScopesTypesHashesProcess with ReleaseProcess, PubspecDependantRe
     List<String> hashes = [];
     bool hideCommits = cmd.askQuestion('Do you want to ignore some other specific commits ?');
     if (hideCommits) {
-      ChangeLogEntry? changeLogEntry = findValue<ChangeLogEntry>(previousValues);
+      ChangeLogEntry? changeLogEntry = findValue<ChangeLogEntry>(previousValues)?.filter(
+        ignoredScopes: scopes,
+        ignoredTypes: types,
+      );
       if (changeLogEntry != null) {
         stdout.writeln('Here are the commits :');
-        stdout.writeAll([
-          for (ConventionalCommitWithHash commit in changeLogEntry.subEntries.values.expand((commits) => commits))
-            '#${commit.hash} ${commit.isBreakingChange ? 'BREAKING ' : ''}${commit.type?.toUpperCase() ?? ''} ${commit.description}\n',
-        ]);
+        for (String type in changeLogEntry.types) {
+          for (ConventionalCommitWithHash commit in changeLogEntry[type]!) {
+            stdout.writeln('#${commit.hash} ${commit.isBreakingChange ? 'BREAKING ' : ''}${type.toUpperCase()} ${commit.description}');
+          }
+        }
       }
       stdout.writeln('Please enter a comma separated list of hashes to hide.');
       String? input = cmd.readLine();
       if (input != null) {
-        hashes = input.split(',').map((hash) {
-          String trimmed = hash.trim();
-          if (trimmed.startsWith('#')) {
-            return trimmed.substring(1);
-          }
-          return trimmed;
-        }).toList();
+        hashes = input
+            .split(',')
+            .map((hash) {
+              String trimmed = hash.trim();
+              if (trimmed.startsWith('#')) {
+                return trimmed.substring(1);
+              }
+              return trimmed;
+            })
+            .where((hash) => hash.isNotEmpty)
+            .toList();
+        if (hashes.isNotEmpty) {
+          stdout.writeln('${hashes.length} ${hashes.length > 1 ? 'commits' : 'commit'} will be hidden.');
+        }
       }
     }
 

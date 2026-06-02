@@ -45,9 +45,12 @@ class WriteChangelogProcess with ReleaseProcess, PubspecDependantReleaseProcess 
 ${Template.parse(config.markdownEntryHeaderTemplate, data: data).render()}
 ''';
     String markdownEntryContent = _generateMarkdownContent(
-      changeLogEntry: changeLogEntry,
+      changeLogEntry: changeLogEntry.filter(
+        ignoredScopes: ignoredScopesTypesHashes.scopes,
+        ignoredTypes: ignoredScopesTypesHashes.types,
+        ignoredHashes: ignoredScopesTypesHashes.hashes,
+      ),
       config: config,
-      ignoredScopesTypesHashes: ignoredScopesTypesHashes,
       data: data,
     );
     File changeLogFile = File('./CHANGELOG.md');
@@ -79,21 +82,11 @@ ${fileContent.substring(changeLogHeader.length + 2)}''';
   String _generateMarkdownContent({
     required ChangeLogEntry changeLogEntry,
     required _WriteChangelogProcessConfig config,
-    required IgnoredScopesTypesHashes ignoredScopesTypesHashes,
     required Map<String, dynamic> data,
   }) {
     String result = '';
-    for (String type in changeLogEntry.subEntries.keys) {
-      if (ignoredScopesTypesHashes.types.contains(type)) {
-        continue;
-      }
-      for (ConventionalCommitWithHash entry in changeLogEntry.subEntries[type]!) {
-        if (ignoredScopesTypesHashes.hashes.contains(entry.hash)) {
-          continue;
-        }
-        if (entry.scopes.firstWhere(ignoredScopesTypesHashes.scopes.contains, orElse: () => '').isNotEmpty) {
-          continue;
-        }
+    for (String type in changeLogEntry.types) {
+      for (ConventionalCommitWithHash entry in changeLogEntry[type]!) {
         result += Template.parse(
           config.markdownEntryListItemTemplate,
           data: {

@@ -13,9 +13,9 @@ abcdef2 docs: update readme
 ''');
 
       expect(entry.changeCount, 3);
-      expect(entry.subEntries.keys, containsAll(['feat', 'fix', 'docs']));
-      expect(entry.subEntries['feat']?.single.description, 'add release command');
-      expect(entry.subEntries['fix']?.single.scopes, ['cli']);
+      expect(entry.types, containsAll(['feat', 'fix', 'docs']));
+      expect(entry['feat']?.single.description, 'add release command');
+      expect(entry['fix']?.single.scopes, ['cli']);
     });
 
     test('bumps patch and build number without breaking changes', () {
