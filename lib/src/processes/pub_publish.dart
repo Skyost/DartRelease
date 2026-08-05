@@ -33,11 +33,14 @@ class PubPublishProcess with ReleaseProcess, PubspecDependantReleaseProcess {
       return ReleaseProcessResultError(error: '`dart pub publish` failed.');
     }
     stdout.writeln('Done.');
-    return ReleaseProcessResultSuccess(
+    return const ReleaseProcessResultSuccess(
       value: PubPublished(),
     );
   }
 }
 
 /// The result of the [PubPublishProcess].
-class PubPublished with ReleaseProcessResultValue {}
+class PubPublished with ReleaseProcessResultValue {
+  /// Creates a new [PubPublished] instance.
+  const PubPublished();
+}
