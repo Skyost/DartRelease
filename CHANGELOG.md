@@ -1,5 +1,10 @@
 # 📰 `release` utility changelog
 
+## v0.1.9
+Released on August 5, 2026.
+
+* **CHORE**: Updated a documentation line to improve the pub.dev score. ([#fb1afa6](https://github.com/Skyost/DartRelease/commit/fb1afa6))
+
 ## v0.1.8
 Released on June 2, 2026.
 
