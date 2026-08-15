@@ -90,7 +90,7 @@ mixin PubspecDependantReleaseProcess on ReleaseProcess {
   String? readGithubRepository(PubspecContent pubspecContent) {
     Map git = readConfig(pubspecContent)['git'] ?? {};
     Uri? repositoryUrl = Uri.tryParse(git['github'] ?? pubspecContent._content['repository'] ?? '');
-    if (repositoryUrl?.host != null && repositoryUrl?.host != 'github.com') {
+    if (repositoryUrl != null && repositoryUrl.hasAuthority && repositoryUrl.host != 'github.com') {
       throw Exception('Only Github repositories are supported for the moment.');
     }
 
