@@ -1,5 +1,10 @@
 # 📰 `release` utility changelog
 
+## v0.1.11
+Released on August 22, 2026.
+
+* **FIX**: Fixed another bug occurring when pubspec did not contain a `repository` key. ([#cbc7d94](https://github.com/Skyost/DartRelease/commit/cbc7d94))
+
 ## v0.1.10
 Released on August 15, 2026.
 
