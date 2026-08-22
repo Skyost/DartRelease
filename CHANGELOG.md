@@ -15,7 +15,6 @@ Released on June 2, 2026.
 
 * **FEAT**: Added a filtering mechanism to `ChangeLogEntry` and encapsulated internal fields. ([#66e5ae0](https://github.com/Skyost/DartRelease/commit/66e5ae0))
 
-
 ## v0.1.7
 Released on June 1, 2026.
 

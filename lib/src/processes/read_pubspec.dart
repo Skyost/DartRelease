@@ -89,7 +89,12 @@ mixin PubspecDependantReleaseProcess on ReleaseProcess {
   /// section of the pubspec.yaml file.
   String? readGithubRepository(PubspecContent pubspecContent) {
     Map git = readConfig(pubspecContent)['git'] ?? {};
-    Uri? repositoryUrl = Uri.tryParse(git['github'] ?? pubspecContent._content['repository'] ?? '');
+    dynamic configuredRepository = git['github'] ?? pubspecContent._content['repository'];
+    if (configuredRepository is! String || configuredRepository.trim().isEmpty) {
+      return null;
+    }
+
+    Uri? repositoryUrl = Uri.tryParse(configuredRepository.trim());
     if (repositoryUrl != null && repositoryUrl.hasAuthority && repositoryUrl.host != 'github.com') {
       throw Exception('Only Github repositories are supported for the moment.');
     }
@@ -103,6 +108,6 @@ mixin PubspecDependantReleaseProcess on ReleaseProcess {
         githubRepository = githubRepository.substring(0, githubRepository.length - 1);
       }
     }
-    return githubRepository;
+    return githubRepository?.isEmpty ?? true ? null : githubRepository;
   }
 }
