@@ -27,14 +27,14 @@ class CreateGithubReleaseProcess with ReleaseProcess, PubspecDependantReleasePro
       return const ReleaseProcessResultCancelled();
     }
 
-    bool createRelease = cmd.askQuestion('Do you want to create a Github release ?');
-    if (!createRelease) {
+    String? repository = readGithubRepository(pubspecContent);
+    if (repository == null) {
       return const ReleaseProcessResultCancelled();
     }
 
-    String? repository = readGithubRepository(pubspecContent);
-    if (repository == null) {
-      return ReleaseProcessResultError(error: 'Cannot find the Github repository in the pubspec.');
+    bool createRelease = cmd.askQuestion('Do you want to create a Github release ?');
+    if (!createRelease) {
+      return const ReleaseProcessResultCancelled();
     }
 
     DotEnv env = DotEnv()..load();
