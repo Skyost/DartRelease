@@ -1,5 +1,18 @@
 # 📰 `release` utility changelog
 
+## v0.2.0
+Released on November 5, 2026.
+
+* **FEAT**: Added a configurable fallback for empty release notes. ([#18f14be](https://github.com/Skyost/DartRelease/commit/18f14be))
+* **FEAT**: Added a configurable initial release note. ([#35b3317](https://github.com/Skyost/DartRelease/commit/35b3317))
+* **FEAT**: Added colors to console output. ([#f9e90d4](https://github.com/Skyost/DartRelease/commit/f9e90d4))
+* **FEAT**: Displayed the package link after publication. ([#2840e13](https://github.com/Skyost/DartRelease/commit/2840e13))
+* **FEAT**: Displayed the release link after publication. ([#815331e](https://github.com/Skyost/DartRelease/commit/815331e))
+* **FIX**: Now accepting abbreviated and full hashes commits. ([#9b2fa2d](https://github.com/Skyost/DartRelease/commit/9b2fa2d))
+* **FIX**: Now reading Github repository before asking to create a release. ([#d549446](https://github.com/Skyost/DartRelease/commit/d549446))
+* **FIX**: Suggested 0.1.0 for the initial release. ([#b65f44c](https://github.com/Skyost/DartRelease/commit/b65f44c))
+* **CHORE**: Updated messages and some default config values. ([#23c6a58](https://github.com/Skyost/DartRelease/commit/23c6a58))
+
 ## v0.1.11
 Released on August 22, 2026.
 
