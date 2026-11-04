@@ -39,6 +39,9 @@ class FindChangesProcess with ReleaseProcess {
       executable: 'git',
       arguments: ['log', '$lastTag..HEAD', '--oneline'],
     );
+    if (result.exitCode != 0) {
+      return ReleaseProcessResultError(error: 'Failed to read Git changes (${result.exitCode}): ${result.stderr}');
+    }
     ChangeLogEntry changeLogEntry = ChangeLogEntry.parseGitLog(result.stdout);
     if (changeLogEntry.isEmpty) {
       stdout.writeln('Found no change.');
@@ -189,17 +192,20 @@ class ConventionalCommitWithHash {
   });
 
   /// Tries to parse a git log line.
+  ///
+  /// Accepts abbreviated and full hashes without assuming a fixed length.
   static ConventionalCommitWithHash? tryParse(String gitLogLine) {
-    if (!gitLogLine.startsWith(RegExp('[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9] '))) {
+    final RegExpMatch? hash = RegExp(r'^([a-f0-9]+) ').firstMatch(gitLogLine);
+    if (hash == null) {
       return null;
     }
-    ConventionalCommit? commit = ConventionalCommit.tryParse(gitLogLine.substring(8));
+    final ConventionalCommit? commit = ConventionalCommit.tryParse(gitLogLine.substring(hash.end));
     if (commit == null) {
       return null;
     }
     return ConventionalCommitWithHash(
       commit: commit,
-      hash: gitLogLine.substring(0, 7),
+      hash: hash.group(1)!,
     );
   }
 

@@ -22,7 +22,7 @@ void main() {
 
     test('writes a changelog entry and filters ignored scopes and types', () async {
       ChangeLogEntry changeLogEntry = ChangeLogEntry.parseGitLog('''
-abcdef0 feat: add release command
+abcdef012345 feat: add release command
 abcdef1 fix(internal): keep this internal
 abcdef2 test: add coverage
 ''');
@@ -45,7 +45,7 @@ abcdef2 test: add coverage
       String content = changelog.readAsStringSync();
       expect(content, startsWith('# 📰 Changelog\n\n## v1.2.3'));
       expect(content, contains('add release command'));
-      expect(content, contains('https://github.com/Skyost/DartRelease/commit/abcdef0'));
+      expect(content, contains('https://github.com/Skyost/DartRelease/commit/abcdef012345'));
       expect(content, isNot(contains('keep this internal')));
       expect(content, isNot(contains('add coverage')));
     });
