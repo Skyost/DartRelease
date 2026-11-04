@@ -63,6 +63,8 @@ class CreateGithubReleaseProcess with ReleaseProcess, PubspecDependantReleasePro
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
       stdout.writeln('Done.');
+      Map<String, dynamic> release = jsonDecode(response.body);
+      stdout.writeln('Github release: ${release['html_url']}');
       stdout.writeln('Fetching tags...');
       Git git = Git(cmd: cmd);
       await Future.delayed(const Duration(seconds: 1));

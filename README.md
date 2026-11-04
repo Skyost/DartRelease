@@ -86,6 +86,7 @@ Done.
 Do you want to create a Github release ? (Y/N) Y
 Creating a release on Github...
 Done.
+Github release: https://github.com/me/my_app/releases/tag/0.1.1
 Fetching tags...
 Done.
 Do you want to publish the new version on pub.dev ? (Y/N) Y
