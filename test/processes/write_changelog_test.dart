@@ -58,6 +58,39 @@ abcdef2 test: add coverage
 
       expect(result, isA<ReleaseProcessResultCancelled>());
     });
+
+    test('writes a fallback when all commits are ignored', () async {
+      final result = await const WriteChangelogProcess().run(const Cmd(verbose: false), [
+        _pubspecContent(),
+        ChangeLogEntry.parseGitLog('abcdef0 test: Add coverage.'),
+        const IgnoredScopesTypesHashes(scopes: [], types: ['test'], hashes: []),
+        NewVersion(version: Version.parse('1.2.3')),
+      ]);
+
+      final content = (result as ReleaseProcessResultSuccess<MarkdownEntryContent>).value.content;
+      expect(content, 'Aucune note trouvée pour cette release.\n');
+      expect(File('CHANGELOG.md').readAsStringSync(), contains(content));
+    });
+
+    test('renders a configurable fallback without a Github repository', () async {
+      final result = await const WriteChangelogProcess().run(const Cmd(verbose: false), [
+        PubspecContent.fromYaml({
+          'version': '1.0.0',
+          'release': {
+            'changelog': {
+              'entry': {'empty': 'No notes for {{ version }}.'},
+            },
+          },
+        }, ''),
+        ChangeLogEntry(),
+        const IgnoredScopesTypesHashes(scopes: [], types: [], hashes: []),
+        NewVersion(version: Version.parse('1.2.3')),
+      ]);
+
+      final content = (result as ReleaseProcessResultSuccess<MarkdownEntryContent>).value.content;
+      expect(content, 'No notes for 1.2.3.\n');
+      expect(File('CHANGELOG.md').readAsStringSync(), contains(content));
+    });
   });
 }
 

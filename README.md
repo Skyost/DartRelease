@@ -118,12 +118,18 @@ release:
     entry:
       title: '## v{{ version }}' # This is the default.
       header: 'Released on {{ date | date: "MMMM d, yyyy" }}.' # This is the default.
+      empty: 'Aucune note trouvée pour cette release.' # This is the default.
       item: '* **{% if breaking %}BREAKING {% endif %}{{ type | upcase }}**: {{ description }} ({% if repo %}[#{{ hash }}](https://github.com/{{ repo }}/commit/{{ hash }}){% else %}#{{ hash }}{% endif %})' # This is the default.
   git:
     github: https://github.com/me/my_app # Alternative to top-level `repository`.
     newVersionCommitMessage: 'chore(version): Updated version and changelog.' # This is the default.
     remote: 'main' # This is the default.
 ```
+
+The `entry.empty` template is used when no release notes are found, including when all
+commits are ignored. It supports the same Liquid variables as `entry.header`:
+`version`, `build`, `date`, and `repo` (when a Github repository is configured).
+Changelogs can also be generated without a Github repository.
 
 ### Setting up Github Releases
 

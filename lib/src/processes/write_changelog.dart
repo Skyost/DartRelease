@@ -26,10 +26,6 @@ class WriteChangelogProcess with ReleaseProcess, PubspecDependantReleaseProcess 
       return const ReleaseProcessResultCancelled();
     }
 
-    String? repository = readGithubRepository(pubspecContent);
-    if (repository == null) {
-      return ReleaseProcessResultError(error: 'Cannot find the Github repository in the pubspec.');
-    }
     _WriteChangelogProcessConfig config = _readConfig(pubspecContent);
     String? githubRepository = readGithubRepository(pubspecContent);
     Map<String, dynamic> data = {
@@ -100,7 +96,7 @@ ${fileContent.substring(changeLogHeader.length + 2)}''';
         result += '\n';
       }
     }
-    return result;
+    return result.trim().isEmpty ? '${Template.parse(config.markdownEntryEmptyTemplate, data: data).render()}\n' : result;
   }
 
   /// Reads the process configuration from the pubspec.yaml file.
@@ -157,12 +153,19 @@ class _WriteChangelogProcessConfig {
   /// Defaults to `* **{% if breaking %}BREAKING {% endif %}{{ type | upcase }}**: {{ description }} ({% if repo %}[#{{ hash }}](https://github.com/{{ repo }}/commit/{{ hash }}){% else %}#{{ hash }}{% endif %})`.
   final String markdownEntryListItemTemplate;
 
+  /// The Liquid template used when no release notes remain after filtering.
+  /// Uses the same data as [markdownEntryHeaderTemplate].
+  /// Read from `release.changelog.entry.empty` in the pubspec.yaml file.
+  /// Defaults to `Aucune note trouvée pour cette release.`.
+  final String markdownEntryEmptyTemplate;
+
   /// Creates a new [_WriteChangelogProcessConfig] instance.
   const _WriteChangelogProcessConfig({
     required this.changelogHeader,
     required this.markdownEntryTitleTemplate,
     required this.markdownEntryHeaderTemplate,
     required this.markdownEntryListItemTemplate,
+    required this.markdownEntryEmptyTemplate,
   });
 
   /// Creates a [_WriteChangelogProcessConfig] from a YAML config.
@@ -173,6 +176,7 @@ class _WriteChangelogProcessConfig {
       changelogHeader: changelog['header'] ?? '# 📰 Changelog',
       markdownEntryTitleTemplate: changelogEntry['title'] ?? '## v{{ version }}',
       markdownEntryHeaderTemplate: changelogEntry['header'] ?? 'Released on {{ date | date: "MMMM d, yyyy" }}.',
+      markdownEntryEmptyTemplate: changelogEntry['empty'] ?? 'Aucune note trouvée pour cette release.',
       markdownEntryListItemTemplate:
           changelogEntry['item'] ??
           '* **{% if breaking %}BREAKING {% endif %}{{ type | upcase }}**: {{ description }} ({% if repo %}[#{{ hash }}](https://github.com/{{ repo }}/commit/{{ hash }}){% else %}#{{ hash }}{% endif %})',
