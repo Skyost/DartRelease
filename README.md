@@ -53,14 +53,6 @@ The utility will guide you through the release process. Note that in order to ge
 _CHANGELOG.md_ file, `release` requires your commits to follow the
 [Conventional Commits](https://conventionalcommits.org) format.
 
-On supported terminals, successes are green, progress messages cyan, warnings yellow,
-and errors red. Prompts are bold. Colors are disabled when output is redirected, when
-`TERM=dumb`, or when the `NO_COLOR` environment variable is set.
-
-When no tag exists, the utility offers to create an initial `0.0.0` tag on the first commit.
-The first release after this tag is suggested as `0.1.0` (with the numeric build number
-incremented if present). You can still enter a different version at the prompt.
-
 Here is an example output :
 
 <details>
@@ -90,13 +82,13 @@ Done.
 Do you want to create a Github release ? (Y/N) Y
 Creating a release on Github...
 Done.
-Github release: https://github.com/me/my_app/releases/tag/0.1.1
+Github release : https://github.com/me/my_app/releases/tag/0.1.1.
 Fetching tags...
 Done.
 Do you want to publish the new version on pub.dev ? (Y/N) Y
 Publishing...
 Done.
-Package: https://pub.dev/packages/my_app
+Package : https://pub.dev/packages/my_app.
 ```
 
 </details>
@@ -124,7 +116,7 @@ release:
     entry:
       title: '## v{{ version }}' # This is the default.
       header: 'Released on {{ date | date: "MMMM d, yyyy" }}.' # This is the default.
-      empty: 'Aucune note trouvée pour cette release.' # This is the default.
+      empty: 'No release note found for this version.' # This is the default.
       initial: '**Initial release**.' # This is the default.
       item: '* **{% if breaking %}BREAKING {% endif %}{{ type | upcase }}**: {{ description }} ({% if repo %}[#{{ hash }}](https://github.com/{{ repo }}/commit/{{ hash }}){% else %}#{{ hash }}{% endif %})' # This is the default.
   git:
@@ -132,15 +124,6 @@ release:
     newVersionCommitMessage: 'chore(version): Updated version and changelog.' # This is the default.
     remote: 'main' # This is the default.
 ```
-
-The `entry.empty` template is used when no release notes are found, including when all
-commits are ignored. It supports the same Liquid variables as `entry.header`:
-`version`, `build`, `date`, and `repo` (when a Github repository is configured).
-Changelogs can also be generated without a Github repository.
-
-For the first release after the initial `0.0.0` tag, `entry.initial` replaces `entry.empty`
-when no release notes remain. It supports the same Liquid variables. Existing release
-notes are kept, even for the initial release.
 
 ### Setting up Github Releases
 

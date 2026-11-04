@@ -18,7 +18,7 @@ void main() {
 
       if (exitCode == 0) {
         expect(result, isA<ReleaseProcessResultSuccess<PubPublished>>());
-        expect(output.output.toString(), contains('Done.\nPackage: https://pub.dev/packages/my_app\n'));
+        expect(output.output.toString(), contains('Done.\nPackage : https://pub.dev/packages/my_app.\n'));
       } else {
         expect(result, isA<ReleaseProcessResultError>());
         expect(output.output.toString(), isNot(contains('https://pub.dev/')));
@@ -35,7 +35,7 @@ void main() {
       stdout: () => output,
     );
 
-    expect(output.output.toString(), contains('Package: https://packages.example.com/packages/my_app\n'));
+    expect(output.output.toString(), contains('Package : https://packages.example.com/packages/my_app.\n'));
     expect(output.output.toString(), isNot(contains('https://pub.dev/')));
   });
 

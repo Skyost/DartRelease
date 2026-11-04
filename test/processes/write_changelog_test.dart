@@ -68,7 +68,7 @@ abcdef2 test: add coverage
       ]);
 
       final content = (result as ReleaseProcessResultSuccess<MarkdownEntryContent>).value.content;
-      expect(content, 'Aucune note trouvée pour cette release.\n');
+      expect(content, 'No release note found for this version.\n');
       expect(File('CHANGELOG.md').readAsStringSync(), contains(content));
     });
 

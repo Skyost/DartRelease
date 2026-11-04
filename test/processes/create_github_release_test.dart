@@ -55,7 +55,7 @@ void main() {
 
       if (status == 201) {
         expect(result, isA<ReleaseProcessResultSuccess<GithubReleaseCreated>>());
-        expect(output.output.toString(), contains('Github release: $url\n'));
+        expect(output.output.toString(), contains('Github release : $url.\n'));
         expect(cmd.fetchedTags, isTrue);
       } else {
         expect(result, isA<ReleaseProcessResultError>());

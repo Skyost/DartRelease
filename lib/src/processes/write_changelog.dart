@@ -160,7 +160,7 @@ class _WriteChangelogProcessConfig {
   /// The Liquid template used when no release notes remain after filtering.
   /// Uses the same data as [markdownEntryHeaderTemplate].
   /// Read from `release.changelog.entry.empty` in the pubspec.yaml file.
-  /// Defaults to `Aucune note trouvée pour cette release.`.
+  /// Defaults to `No release note found for this version.`.
   final String markdownEntryEmptyTemplate;
 
   /// The Liquid template used for an initial release with no release notes.
@@ -187,7 +187,7 @@ class _WriteChangelogProcessConfig {
       changelogHeader: changelog['header'] ?? '# 📰 Changelog',
       markdownEntryTitleTemplate: changelogEntry['title'] ?? '## v{{ version }}',
       markdownEntryHeaderTemplate: changelogEntry['header'] ?? 'Released on {{ date | date: "MMMM d, yyyy" }}.',
-      markdownEntryEmptyTemplate: changelogEntry['empty'] ?? 'Aucune note trouvée pour cette release.',
+      markdownEntryEmptyTemplate: changelogEntry['empty'] ?? 'No release note found for this version.',
       markdownEntryInitialTemplate: changelogEntry['initial'] ?? '**Initial release**.',
       markdownEntryListItemTemplate:
           changelogEntry['item'] ??

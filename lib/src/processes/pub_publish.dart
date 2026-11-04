@@ -36,7 +36,7 @@ class PubPublishProcess with ReleaseProcess, PubspecDependantReleaseProcess {
     String? name = pubspecContent.name;
     if (name != null && name.isNotEmpty) {
       Uri packageUrl = Uri.parse(pubspecContent.publishTo ?? 'https://pub.dev').replace(pathSegments: ['packages', name]);
-      cmd.success('Package: $packageUrl');
+      cmd.success('Package : $packageUrl.');
     }
     return const ReleaseProcessResultSuccess(
       value: PubPublished(),
