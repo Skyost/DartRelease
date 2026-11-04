@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:release/src/processes/processes.dart';
 import 'package:release/src/utils/cmd.dart';
 import 'package:release/src/utils/git.dart';
@@ -28,7 +26,7 @@ class CommitAndPushProcess with ReleaseProcess, PubspecDependantReleaseProcess {
     }
 
     _CommitAndPushProcessConfig config = _readConfig(pubspecContent);
-    stdout.writeln('Committing changes...');
+    cmd.info('Committing changes...');
     Git git = Git(cmd: cmd);
     bool commitResult = await git.commit(
       files: [
@@ -45,16 +43,16 @@ class CommitAndPushProcess with ReleaseProcess, PubspecDependantReleaseProcess {
     if (!commitResult) {
       return ReleaseProcessResultError(error: 'Commit failed.');
     }
-    stdout.writeln('Done.');
+    cmd.success('Done.');
     bool push = cmd.askQuestion('Do you want to push the changes ?');
     bool pushResult = false;
     if (push) {
-      stdout.writeln('Pushing...');
+      cmd.info('Pushing...');
       pushResult = await git.push(config.remoteBranch);
       if (!pushResult) {
         return ReleaseProcessResultError(error: 'Push failed.');
       }
-      stdout.writeln('Done.');
+      cmd.success('Done.');
     }
     return ReleaseProcessResultSuccess(
       value: CommitPushResult(

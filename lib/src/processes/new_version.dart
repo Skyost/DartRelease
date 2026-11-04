@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:pub_semver/pub_semver.dart';
 import 'package:release/src/processes/find_changes.dart';
 import 'package:release/src/processes/process.dart';
@@ -21,7 +19,7 @@ class NewVersionProcess with ReleaseProcess, PubspecDependantReleaseProcess {
       return const ReleaseProcessResultCancelled();
     }
     Version newVersion = changeLogEntry.bumpVersion(pubspecContent.version);
-    stdout.write('Proposed new version is "$newVersion", enter "Y" to continue or type a new version proposal. Type "N" to cancel. ');
+    cmd.prompt('Proposed new version is "$newVersion", enter "Y" to continue or type a new version proposal. Type "N" to cancel. ');
     String input = cmd.readLine()?.toUpperCase() ?? 'N';
     if (input == 'N') {
       return const ReleaseProcessResultCancelled(stop: true);

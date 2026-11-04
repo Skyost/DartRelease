@@ -43,7 +43,7 @@ class CreateGithubReleaseProcess with ReleaseProcess, PubspecDependantReleasePro
       return ReleaseProcessResultError(error: 'Cannot find GITHUB_PAT in .env.');
     }
 
-    stdout.writeln('Creating a release on Github...');
+    cmd.info('Creating a release on Github...');
     http.Response response = await http.post(
       Uri(
         scheme: 'https',
@@ -62,14 +62,18 @@ class CreateGithubReleaseProcess with ReleaseProcess, PubspecDependantReleasePro
       }),
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
-      stdout.writeln('Done.');
+      cmd.success('Done.');
       Map<String, dynamic> release = jsonDecode(response.body);
-      stdout.writeln('Github release: ${release['html_url']}');
-      stdout.writeln('Fetching tags...');
+      cmd.success('Github release: ${release['html_url']}');
+      cmd.info('Fetching tags...');
       Git git = Git(cmd: cmd);
       await Future.delayed(const Duration(seconds: 1));
       bool fetchResult = await git.fetch(['--tags']);
-      stdout.writeln('Done.');
+      if (fetchResult) {
+        cmd.success('Done.');
+      } else {
+        cmd.warning('Release published, but fetching tags failed.');
+      }
       return ReleaseProcessResultSuccess(
         value: GithubReleaseCreated(
           fetchResult: fetchResult,

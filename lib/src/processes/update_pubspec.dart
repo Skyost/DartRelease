@@ -22,7 +22,7 @@ class UpdatePubspecProcess with ReleaseProcess, PubspecDependantReleaseProcess {
     }
     YamlEditor editor = YamlEditor(pubspecContent.rawContent);
     editor.update(['version'], newVersion.version.toString());
-    stdout.writeln('Writing version to "pubspec.yaml" and running `flutter pub get`...');
+    cmd.info('Writing version to "pubspec.yaml" and running `flutter pub get`...');
 
     File pubspecFile = File('./pubspec.yaml');
     String newContent = editor.toString();
@@ -34,7 +34,7 @@ class UpdatePubspecProcess with ReleaseProcess, PubspecDependantReleaseProcess {
     if (result.exitCode != 0) {
       return ReleaseProcessResultError(error: '`dart pub get` failed.');
     }
-    stdout.writeln('Done.');
+    cmd.success('Done.');
     return ReleaseProcessResultSuccess(
       value: PubspecUpdated(
         newContent: newContent,

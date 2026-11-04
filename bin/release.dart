@@ -44,8 +44,9 @@ Future<void> main(List<String> args) async {
     processes: processes,
     onResult: (process, result) {
       if (result is ReleaseProcessResultError) {
-        stderr.writeln('An error occurred during the execution of the process ${process.runtimeType}.');
-        stderr.writeln(result.error);
+        Cmd cmd = Cmd(verbose: results.flag('verbose'));
+        cmd.error('An error occurred during the execution of the process ${process.runtimeType}.');
+        cmd.error(result.error);
         stderr.writeln(result.stackTrace);
       }
     },

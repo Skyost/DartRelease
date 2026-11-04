@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:release/src/processes/processes.dart';
 import 'package:release/src/utils/cmd.dart';
 
@@ -15,7 +13,7 @@ class AskIgnoredScopesTypesHashesProcess with ReleaseProcess, PubspecDependantRe
   ReleaseProcessResult runWithPubspec(Cmd cmd, List<ReleaseProcessResultValue> previousValues, PubspecContent pubspecContent) {
     _AskIgnoredScopesAndTypesProcessConfig config = _readConfig(pubspecContent);
     List<String> scopes = config.defaultIgnoredScopes;
-    stdout.write('Enter a comma separated list of scopes to ignore (default is "${scopes.join(', ')}") or "Y" to continue. ');
+    cmd.prompt('Enter a comma separated list of scopes to ignore (default is "${scopes.join(', ')}") or "Y" to continue. ');
     String input = cmd.readLine()?.toUpperCase() ?? 'Y';
     if (input != 'Y') {
       scopes = [
@@ -24,7 +22,7 @@ class AskIgnoredScopesTypesHashesProcess with ReleaseProcess, PubspecDependantRe
     }
 
     List<String> types = config.defaultIgnoredTypes;
-    stdout.write('Enter a comma separated list of types to ignore (default is "${types.join(', ')}") or "Y" to continue. ');
+    cmd.prompt('Enter a comma separated list of types to ignore (default is "${types.join(', ')}") or "Y" to continue. ');
     input = cmd.readLine()?.toUpperCase() ?? 'Y';
     if (input != 'Y') {
       types = [
@@ -40,14 +38,19 @@ class AskIgnoredScopesTypesHashesProcess with ReleaseProcess, PubspecDependantRe
         ignoredTypes: types,
       );
       if (changeLogEntry != null) {
-        stdout.writeln('Here are the commits :');
+        cmd.info('Here are the commits :');
         for (String type in changeLogEntry.types) {
           for (ConventionalCommitWithHash commit in changeLogEntry[type]!) {
-            stdout.writeln('#${commit.hash} ${commit.isBreakingChange ? 'BREAKING ' : ''}${type.toUpperCase()} ${commit.description}');
+            String message = '#${commit.hash} ${commit.isBreakingChange ? 'BREAKING ' : ''}${type.toUpperCase()} ${commit.description}';
+            if (commit.isBreakingChange) {
+              cmd.warning(message);
+            } else {
+              cmd.info(message);
+            }
           }
         }
       }
-      stdout.writeln('Please enter a comma separated list of hashes to hide.');
+      cmd.info('Please enter a comma separated list of hashes to hide.');
       String? input = cmd.readLine();
       if (input != null) {
         hashes = input
@@ -62,7 +65,7 @@ class AskIgnoredScopesTypesHashesProcess with ReleaseProcess, PubspecDependantRe
             .where((hash) => hash.isNotEmpty)
             .toList();
         if (hashes.isNotEmpty) {
-          stdout.writeln('${hashes.length} ${hashes.length > 1 ? 'commits' : 'commit'} will be hidden.');
+          cmd.info('${hashes.length} ${hashes.length > 1 ? 'commits' : 'commit'} will be hidden.');
         }
       }
     }

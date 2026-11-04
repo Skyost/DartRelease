@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:pub_semver/pub_semver.dart';
 import 'package:release/src/processes/commit_push.dart';
 import 'package:release/src/processes/new_version.dart';
@@ -26,13 +24,13 @@ class CreateTagProcess with ReleaseProcess {
     if (!createTag) {
       return const ReleaseProcessResultCancelled();
     }
-    stdout.writeln('Creating a tag...');
+    cmd.info('Creating a tag...');
     Git git = Git(cmd: cmd);
     bool tagResult = await git.tag(newVersion.version);
     if (!tagResult) {
       return ReleaseProcessResultError(error: 'Tag creation failed.');
     }
-    stdout.writeln('Done.');
+    cmd.success('Done.');
     return ReleaseProcessResultSuccess(
       value: TagCreated(
         version: newVersion.version,

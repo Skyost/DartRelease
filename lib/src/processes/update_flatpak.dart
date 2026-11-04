@@ -30,7 +30,7 @@ class UpdateFlatpakProcess with ReleaseProcess, PubspecDependantReleaseProcess {
       return const ReleaseProcessResultCancelled();
     }
 
-    stdout.writeln('Updating "${config.flatpakPath}"...');
+    cmd.info('Updating "${config.flatpakPath}"...');
 
     ChangeLogEntry? changeLogEntry = findValue<ChangeLogEntry>(previousValues);
     String? githubRepository = readGithubRepository(pubspecContent);
@@ -91,7 +91,7 @@ class UpdateFlatpakProcess with ReleaseProcess, PubspecDependantReleaseProcess {
 
     String newContent = document.toXmlString(pretty: true);
     flatpakFile.writeAsStringSync(newContent);
-    stdout.writeln('Done.');
+    cmd.success('Done.');
 
     return ReleaseProcessResultSuccess(
       value: FlatpakUpdated(

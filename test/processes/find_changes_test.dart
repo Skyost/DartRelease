@@ -61,7 +61,7 @@ void main() {
 
     test('reports a failed Git log instead of succeeding with no changes', () async {
       final ReleaseProcessResult result = await const FindChangesProcess().run(
-        const _GitLogCmd(exitCode: 128, error: 'fatal: invalid revision range'),
+        const _GitLogCmd(exitCode: 128, errorOutput: 'fatal: invalid revision range'),
         [],
       );
 
@@ -146,10 +146,10 @@ class _GitLogCmd extends Cmd {
   final int exitCode;
 
   /// Diagnostic output from a failed Git log command.
-  final String error;
+  final String errorOutput;
 
   /// Creates a command runner with a known tag and configurable commit log.
-  const _GitLogCmd({this.output = '', this.exitCode = 0, this.error = ''}) : super(verbose: false);
+  const _GitLogCmd({this.output = '', this.exitCode = 0, this.errorOutput = ''}) : super(verbose: false);
 
   @override
   Future<ProcessResult> run({required String executable, List<String> arguments = const []}) async {
@@ -158,6 +158,6 @@ class _GitLogCmd extends Cmd {
       return ProcessResult(0, 0, '0.0.16\n', '');
     }
     expect(arguments, ['log', '0.0.16..HEAD', '--oneline']);
-    return ProcessResult(0, exitCode, output, error);
+    return ProcessResult(0, exitCode, output, errorOutput);
   }
 }

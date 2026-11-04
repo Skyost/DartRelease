@@ -24,14 +24,11 @@ void main() {
 
   for (final int status in [201, 404]) {
     test('only displays a Github release link after successful publication (HTTP $status)', () async {
-      final previousDirectory = Directory.current;
       final directory = Directory.systemTemp.createTempSync('release_github_test_');
-      Directory.current = directory;
       addTearDown(() {
-        Directory.current = previousDirectory;
         directory.deleteSync(recursive: true);
       });
-      File('.env').writeAsStringSync('GITHUB_PAT=test-token\n');
+      final envFile = File('${directory.path}/.env')..writeAsStringSync('GITHUB_PAT=test-token\n');
       final output = RecordingStdout();
       final cmd = _GithubCmd();
       const url = 'https://github.com/Skyost/DartRelease/releases/tag/1.2.3';
@@ -49,6 +46,10 @@ void main() {
             return http.Response(jsonEncode({'html_url': url}), status);
           }),
         ),
+        createFile: (path) {
+          expect(path, '.env');
+          return envFile;
+        },
         stdout: () => output,
       );
 

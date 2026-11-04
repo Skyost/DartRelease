@@ -27,12 +27,12 @@ class UpdateSnapcraftProcess with ReleaseProcess, PubspecDependantReleaseProcess
       return const ReleaseProcessResultCancelled();
     }
 
-    stdout.writeln('Writing version to "${config.snapcraftPath}"...');
+    cmd.info('Writing version to "${config.snapcraftPath}"...');
     YamlEditor editor = YamlEditor(snapcraftFile.readAsStringSync());
     editor.update(['version'], newVersion.version.buildName());
     String newContent = editor.toString();
     snapcraftFile.writeAsStringSync(newContent);
-    stdout.writeln('Done.');
+    cmd.success('Done.');
 
     return ReleaseProcessResultSuccess(
       value: SnapcraftUpdated(

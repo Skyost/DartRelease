@@ -24,7 +24,7 @@ class FindChangesProcess with ReleaseProcess {
       if (!createInitialTag) {
         return const ReleaseProcessResultCancelled(stop: true);
       }
-      stdout.writeln('Creating initial tag...');
+      cmd.info('Creating initial tag...');
       bool initialTagCreated = await git.createInitialTag();
       if (!initialTagCreated) {
         return ReleaseProcessResultError(error: 'Initial tag creation failed.');
@@ -34,7 +34,7 @@ class FindChangesProcess with ReleaseProcess {
         return ReleaseProcessResultError(error: 'Cannot find last tag.');
       }
     }
-    stdout.writeln('Last tag is "$lastTag".');
+    cmd.info('Last tag is "$lastTag".');
     ProcessResult result = await cmd.run(
       executable: 'git',
       arguments: ['log', '$lastTag..HEAD', '--oneline'],
@@ -44,11 +44,16 @@ class FindChangesProcess with ReleaseProcess {
     }
     ChangeLogEntry changeLogEntry = ChangeLogEntry.parseGitLog(result.stdout, isInitialRelease: lastTag == '0.0.0');
     if (changeLogEntry.isEmpty) {
-      stdout.writeln('Found no change.');
+      cmd.warning('Found no change.');
     } else {
       int changeCount = changeLogEntry.changeCount;
       int breakingChangeCount = changeLogEntry.breakingChangeCount;
-      stdout.writeln('Found $changeCount ${changeCount == 1 ? 'change' : 'changes'}. ${breakingChangeCount >= 1 ? '$breakingChangeCount breaking.' : 'No breaking change detected.'}');
+      String message = 'Found $changeCount ${changeCount == 1 ? 'change' : 'changes'}. ${breakingChangeCount >= 1 ? '$breakingChangeCount breaking.' : 'No breaking change detected.'}';
+      if (breakingChangeCount > 0) {
+        cmd.warning(message);
+      } else {
+        cmd.info(message);
+      }
     }
     return ReleaseProcessResultSuccess(value: changeLogEntry);
   }

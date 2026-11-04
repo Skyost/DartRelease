@@ -24,7 +24,7 @@ class PubPublishProcess with ReleaseProcess, PubspecDependantReleaseProcess {
       return const ReleaseProcessResultCancelled();
     }
 
-    stdout.writeln('Publishing...');
+    cmd.info('Publishing...');
     ProcessResult result = await cmd.run(
       executable: 'dart',
       arguments: ['pub', 'publish', '-f'],
@@ -32,11 +32,11 @@ class PubPublishProcess with ReleaseProcess, PubspecDependantReleaseProcess {
     if (result.exitCode != 0) {
       return ReleaseProcessResultError(error: '`dart pub publish` failed.');
     }
-    stdout.writeln('Done.');
+    cmd.success('Done.');
     String? name = pubspecContent.name;
     if (name != null && name.isNotEmpty) {
       Uri packageUrl = Uri.parse(pubspecContent.publishTo ?? 'https://pub.dev').replace(pathSegments: ['packages', name]);
-      stdout.writeln('Package: $packageUrl');
+      cmd.success('Package: $packageUrl');
     }
     return const ReleaseProcessResultSuccess(
       value: PubPublished(),

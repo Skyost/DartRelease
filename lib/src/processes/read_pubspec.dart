@@ -26,8 +26,8 @@ class ReadPubspecProcess with ReleaseProcess {
       return ReleaseProcessResultError(error: 'Cannot find current version.');
     }
     PubspecContent pubspecContent = PubspecContent.fromYaml(pubspec, pubspecContentString);
-    stdout.writeln('Successfully read pubspec.yaml.');
-    stdout.writeln('Current version is "${pubspecContent.version}".');
+    cmd.success('Successfully read pubspec.yaml.');
+    cmd.info('Current version is "${pubspecContent.version}".');
     return ReleaseProcessResultSuccess(value: pubspecContent);
   }
 }

@@ -5,6 +5,9 @@ class RecordingStdout implements Stdout {
   final StringBuffer output = StringBuffer();
 
   @override
+  bool get hasTerminal => false;
+
+  @override
   bool get supportsAnsiEscapes => false;
 
   @override

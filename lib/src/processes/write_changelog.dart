@@ -64,9 +64,9 @@ ${fileContent.substring(changeLogHeader.length + 2)}''';
     if (!changeLogContent.startsWith(changeLogHeader)) {
       return ReleaseProcessResultError(error: 'Current changelog does not start with the expected header. If you have changed in the configuration, please reflect the changes in the changelog file.');
     }
-    stdout.writeln('Writing changelog content...');
+    cmd.info('Writing changelog content...');
     changeLogFile.writeAsStringSync(changeLogContent);
-    stdout.writeln('Done.');
+    cmd.success('Done.');
     return ReleaseProcessResultSuccess(
       value: MarkdownEntryContent(
         content: markdownEntryContent,
