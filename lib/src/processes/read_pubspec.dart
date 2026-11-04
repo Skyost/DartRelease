@@ -34,6 +34,9 @@ class ReadPubspecProcess with ReleaseProcess {
 
 /// The result of the [ReadPubspecProcess].
 class PubspecContent with ReleaseProcessResultValue {
+  /// The package name, when configured.
+  String? get name => _content['name'];
+
   /// The current version.
   final Version version;
 

@@ -33,6 +33,11 @@ class PubPublishProcess with ReleaseProcess, PubspecDependantReleaseProcess {
       return ReleaseProcessResultError(error: '`dart pub publish` failed.');
     }
     stdout.writeln('Done.');
+    String? name = pubspecContent.name;
+    if (name != null && name.isNotEmpty) {
+      Uri packageUrl = Uri.parse(pubspecContent.publishTo ?? 'https://pub.dev').replace(pathSegments: ['packages', name]);
+      stdout.writeln('Package: $packageUrl');
+    }
     return const ReleaseProcessResultSuccess(
       value: PubPublished(),
     );

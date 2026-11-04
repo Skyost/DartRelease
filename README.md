@@ -92,6 +92,7 @@ Done.
 Do you want to publish the new version on pub.dev ? (Y/N) Y
 Publishing...
 Done.
+Package: https://pub.dev/packages/my_app
 ```
 
 </details>
