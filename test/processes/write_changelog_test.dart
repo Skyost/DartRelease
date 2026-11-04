@@ -91,6 +91,51 @@ abcdef2 test: add coverage
       expect(content, 'No notes for 1.2.3.\n');
       expect(File('CHANGELOG.md').readAsStringSync(), contains(content));
     });
+
+    test('uses the initial release fallback after filtering', () async {
+      final result = await const WriteChangelogProcess().run(const Cmd(verbose: false), [
+        _pubspecContent(),
+        ChangeLogEntry.parseGitLog('abcdef0 test: Add coverage.', isInitialRelease: true),
+        const IgnoredScopesTypesHashes(scopes: [], types: ['test'], hashes: []),
+        NewVersion(version: Version.parse('0.1.0')),
+      ]);
+
+      expect((result as ReleaseProcessResultSuccess<MarkdownEntryContent>).value.content, '**Initial release**.\n');
+      expect(File('CHANGELOG.md').readAsStringSync(), contains('**Initial release**.\n'));
+    });
+
+    test('renders the configured initial fallback even when a changelog already exists', () async {
+      File('CHANGELOG.md').writeAsStringSync('# 📰 Changelog\n\nExisting content.\n');
+      final result = await const WriteChangelogProcess().run(const Cmd(verbose: false), [
+        PubspecContent.fromYaml({
+          'version': '0.0.1',
+          'release': {
+            'changelog': {
+              'entry': {'initial': 'First release: {{ version }}.', 'empty': 'No notes.'},
+            },
+          },
+        }, ''),
+        ChangeLogEntry(isInitialRelease: true),
+        const IgnoredScopesTypesHashes(scopes: [], types: [], hashes: []),
+        NewVersion(version: Version.parse('0.1.0')),
+      ]);
+
+      expect((result as ReleaseProcessResultSuccess<MarkdownEntryContent>).value.content, 'First release: 0.1.0.\n');
+      expect(File('CHANGELOG.md').readAsStringSync(), endsWith('Existing content.\n'));
+    });
+
+    test('keeps release notes when the initial release has visible commits', () async {
+      final result = await const WriteChangelogProcess().run(const Cmd(verbose: false), [
+        _pubspecContent(),
+        ChangeLogEntry.parseGitLog('abcdef0 feat: Add release command.', isInitialRelease: true),
+        const IgnoredScopesTypesHashes(scopes: [], types: [], hashes: []),
+        NewVersion(version: Version.parse('0.1.0')),
+      ]);
+
+      final content = (result as ReleaseProcessResultSuccess<MarkdownEntryContent>).value.content;
+      expect(content, contains('Add release command.'));
+      expect(content, isNot(contains('**Initial release**.')));
+    });
   });
 }
 

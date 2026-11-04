@@ -96,7 +96,11 @@ ${fileContent.substring(changeLogHeader.length + 2)}''';
         result += '\n';
       }
     }
-    return result.trim().isEmpty ? '${Template.parse(config.markdownEntryEmptyTemplate, data: data).render()}\n' : result;
+    if (result.trim().isEmpty) {
+      String template = changeLogEntry.isInitialRelease ? config.markdownEntryInitialTemplate : config.markdownEntryEmptyTemplate;
+      return '${Template.parse(template, data: data).render()}\n';
+    }
+    return result;
   }
 
   /// Reads the process configuration from the pubspec.yaml file.
@@ -159,6 +163,12 @@ class _WriteChangelogProcessConfig {
   /// Defaults to `Aucune note trouvée pour cette release.`.
   final String markdownEntryEmptyTemplate;
 
+  /// The Liquid template used for an initial release with no release notes.
+  /// Uses the same data as [markdownEntryHeaderTemplate].
+  /// Read from `release.changelog.entry.initial` in the pubspec.yaml file.
+  /// Defaults to `**Initial release**.`.
+  final String markdownEntryInitialTemplate;
+
   /// Creates a new [_WriteChangelogProcessConfig] instance.
   const _WriteChangelogProcessConfig({
     required this.changelogHeader,
@@ -166,6 +176,7 @@ class _WriteChangelogProcessConfig {
     required this.markdownEntryHeaderTemplate,
     required this.markdownEntryListItemTemplate,
     required this.markdownEntryEmptyTemplate,
+    required this.markdownEntryInitialTemplate,
   });
 
   /// Creates a [_WriteChangelogProcessConfig] from a YAML config.
@@ -177,6 +188,7 @@ class _WriteChangelogProcessConfig {
       markdownEntryTitleTemplate: changelogEntry['title'] ?? '## v{{ version }}',
       markdownEntryHeaderTemplate: changelogEntry['header'] ?? 'Released on {{ date | date: "MMMM d, yyyy" }}.',
       markdownEntryEmptyTemplate: changelogEntry['empty'] ?? 'Aucune note trouvée pour cette release.',
+      markdownEntryInitialTemplate: changelogEntry['initial'] ?? '**Initial release**.',
       markdownEntryListItemTemplate:
           changelogEntry['item'] ??
           '* **{% if breaking %}BREAKING {% endif %}{{ type | upcase }}**: {{ description }} ({% if repo %}[#{{ hash }}](https://github.com/{{ repo }}/commit/{{ hash }}){% else %}#{{ hash }}{% endif %})',
