@@ -42,7 +42,7 @@ class FindChangesProcess with ReleaseProcess {
     if (result.exitCode != 0) {
       return ReleaseProcessResultError(error: 'Failed to read Git changes (${result.exitCode}): ${result.stderr}');
     }
-    ChangeLogEntry changeLogEntry = ChangeLogEntry.parseGitLog(result.stdout);
+    ChangeLogEntry changeLogEntry = ChangeLogEntry.parseGitLog(result.stdout, isInitialRelease: lastTag == '0.0.0');
     if (changeLogEntry.isEmpty) {
       stdout.writeln('Found no change.');
     } else {
@@ -69,12 +69,15 @@ class ChangeLogEntry with ReleaseProcessResultValue {
   /// The sub-entries (ie. messages).
   final SplayTreeMap<String, List<ConventionalCommitWithHash>> _subEntries;
 
+  /// Whether the changes are relative to the initial `0.0.0` tag.
+  final bool isInitialRelease;
+
   /// Creates a new changelog entry instance.
-  ChangeLogEntry() : _subEntries = SplayTreeMap(_compareTypes);
+  ChangeLogEntry({this.isInitialRelease = false}) : _subEntries = SplayTreeMap(_compareTypes);
 
   /// Parses a git log and returns a changelog entry.
-  static ChangeLogEntry parseGitLog(String gitLog) {
-    ChangeLogEntry result = ChangeLogEntry();
+  static ChangeLogEntry parseGitLog(String gitLog, {bool isInitialRelease = false}) {
+    ChangeLogEntry result = ChangeLogEntry(isInitialRelease: isInitialRelease);
     List<String> lines = gitLog.split('\n');
     for (String line in lines) {
       ConventionalCommitWithHash? commit = ConventionalCommitWithHash.tryParse(line);
@@ -131,9 +134,9 @@ class ChangeLogEntry with ReleaseProcessResultValue {
     int? buildNumber = int.tryParse(version.build.join());
     bool hasBreakingChange = this.hasBreakingChange;
     return Version(
-      version.major,
-      hasBreakingChange ? (version.minor + 1) : version.minor,
-      hasBreakingChange ? 0 : (version.patch + 1),
+      isInitialRelease ? 0 : version.major,
+      isInitialRelease ? 1 : (hasBreakingChange ? (version.minor + 1) : version.minor),
+      isInitialRelease || hasBreakingChange ? 0 : (version.patch + 1),
       build: buildNumber == null ? null : (buildNumber + 1).toString(),
     );
   }
@@ -153,7 +156,7 @@ class ChangeLogEntry with ReleaseProcessResultValue {
     List<String> ignoredTypes = const [],
     List<String> ignoredHashes = const [],
   }) {
-    ChangeLogEntry result = ChangeLogEntry();
+    ChangeLogEntry result = ChangeLogEntry(isInitialRelease: isInitialRelease);
     for (String type in _subEntries.keys) {
       if (ignoredTypes.contains(type)) {
         continue;

@@ -53,6 +53,10 @@ The utility will guide you through the release process. Note that in order to ge
 _CHANGELOG.md_ file, `release` requires your commits to follow the
 [Conventional Commits](https://conventionalcommits.org) format.
 
+When no tag exists, the utility offers to create an initial `0.0.0` tag on the first commit.
+The first release after this tag is suggested as `0.1.0` (with the numeric build number
+incremented if present). You can still enter a different version at the prompt.
+
 Here is an example output :
 
 <details>

@@ -30,6 +30,22 @@ void main() {
   });
 
   group('FindChangesProcess', () {
+    for (final bool tagExists in [false, true]) {
+      test('suggests 0.1.0 after ${tagExists ? 'finding' : 'creating'} the initial tag', () async {
+        final cmd = _InitialReleaseCmd(tagExists: tagExists);
+        final result = await const FindChangesProcess().run(cmd, []);
+        final entry = (result as ReleaseProcessResultSuccess<ChangeLogEntry>).value;
+
+        expect(entry.isInitialRelease, isTrue);
+        expect(entry.filter(ignoredTypes: ['chore']).isInitialRelease, isTrue);
+        final versionResult = await const NewVersionProcess().run(cmd, [
+          PubspecContent.fromYaml({'version': '1.0.0'}, ''),
+          entry,
+        ]);
+        expect((versionResult as ReleaseProcessResultSuccess<NewVersion>).value.version.toString(), '0.1.0');
+      });
+    }
+
     test('reads changes with Git automatic hash lengths', () async {
       final ReleaseProcessResult result = await const FindChangesProcess().run(
         const _GitLogCmd(output: '2bdce524 chore(release): Updated release utility.\n'),
@@ -77,6 +93,12 @@ abcdef2 docs: update readme
       expect(version.toString(), '1.2.4+5');
     });
 
+    test('increments the build number for the initial release', () {
+      final entry = ChangeLogEntry(isInitialRelease: true);
+
+      expect(entry.bumpVersion(Version.parse('0.0.1+4')).toString(), '0.1.0+5');
+    });
+
     test('bumps minor, resets patch, and increments build number for breaking changes', () {
       ChangeLogEntry entry = ChangeLogEntry.parseGitLog('abcdef0 feat!: replace release flow');
 
@@ -85,6 +107,34 @@ abcdef2 docs: update readme
       expect(version.toString(), '1.3.0+5');
     });
   });
+}
+
+class _InitialReleaseCmd extends Cmd {
+  bool tagExists;
+
+  _InitialReleaseCmd({required this.tagExists}) : super(verbose: false);
+
+  @override
+  bool askQuestion(String question) => true;
+
+  @override
+  String? readLine() => 'Y';
+
+  @override
+  Future<ProcessResult> run({required String executable, List<String> arguments = const []}) async {
+    expect(executable, 'git');
+    if (arguments.first == 'describe') {
+      return ProcessResult(0, tagExists ? 0 : 128, tagExists ? '0.0.0\n' : '', '');
+    }
+    if (arguments.first == 'tag') {
+      expect(arguments, ['tag', '-a', '0.0.0', 'abcdef0', '-m', 'First commit.']);
+      tagExists = true;
+      return ProcessResult(0, 0, '', '');
+    }
+    expect(arguments.first, 'log');
+    expect(arguments, tagExists ? ['log', '0.0.0..HEAD', '--oneline'] : ['log', '--oneline', '--reverse']);
+    return ProcessResult(0, 0, 'abcdef0 chore: Initial commit.\n', '');
+  }
 }
 
 /// Supplies Git output without modifying a repository or creating a release.
